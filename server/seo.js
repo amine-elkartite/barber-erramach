@@ -10,8 +10,8 @@ const escape = (value) =>
       ],
   );
 export function pageHandler(index) {
-  const template = readFileSync(index, "utf8");
   return (req, res) => {
+    const template = readFileSync(index, "utf8");
     const meta = metadata[req.path];
     const [title, description] = meta || [
       "Page introuvable | ER RAMMACH",
