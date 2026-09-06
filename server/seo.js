@@ -12,7 +12,13 @@ const escape = (value) =>
 export function pageHandler(index) {
   return (req, res) => {
     const template = readFileSync(index, "utf8");
-    const meta = metadata[req.path];
+    const isAdmin = req.path.startsWith("/admin");
+    const meta = isAdmin
+      ? [
+          "Administration | ER RAMMACH",
+          "Espace administrateur ER RAMMACH Mohamed Barber Shop.",
+        ]
+      : metadata[req.path];
     const [title, description] = meta || [
       "Page introuvable | ER RAMMACH",
       "Retrouvez votre chemin vers ER RAMMACH Barber Shop.",

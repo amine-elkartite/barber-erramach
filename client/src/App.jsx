@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
+const Admin = lazy(() => import("./pages/Admin"));
 const Services = lazy(() => import("./pages/Services"));
 const Booking = lazy(() => import("./pages/Booking"));
 const Gallery = lazy(() => import("./pages/Gallery"));
@@ -19,6 +20,7 @@ export default function App() {
         }
       >
         <Routes>
+          <Route path="admin/*" element={<Admin />} />
           <Route element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="services" element={<Services />} />
