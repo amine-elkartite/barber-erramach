@@ -1384,3 +1384,144 @@
     padding: 16px;
   }
 }
+
+/* Pixel polish pass: keep the functional admin close to the provided black/gold references. */
+@media (min-width: 1501px) {
+  .admin-content {
+    padding: 24px 24px 36px;
+  }
+  .admin-stats {
+    gap: 22px;
+    margin-bottom: 20px;
+  }
+  .admin-stat {
+    min-height: 130px;
+    padding: 22px 22px;
+    grid-template-columns: 66px minmax(0, 1fr) 96px;
+  }
+  .admin-dashboard-grid {
+    grid-template-columns: minmax(0, 1.58fr) minmax(330px, 0.74fr);
+    gap: 18px;
+  }
+  .timeline-panel {
+    grid-column: 1;
+  }
+  .slots-admin {
+    grid-column: 2;
+  }
+  .today-panel {
+    grid-column: 1;
+  }
+  .chart-panel,
+  .quick-actions {
+    grid-column: 2;
+  }
+}
+.admin-panel,
+.admin-stat {
+  background:
+    linear-gradient(135deg, rgba(22, 23, 23, 0.96), rgba(8, 8, 8, 0.985)),
+    radial-gradient(circle at 100% 0, rgba(216, 163, 59, 0.045), transparent 32%);
+}
+.timeline-panel {
+  padding: 17px 20px;
+}
+.timeline-row {
+  min-height: 70px;
+}
+.timeline-grid article {
+  min-height: 48px;
+  max-width: 188px;
+  color: #fff4dc;
+  box-shadow: inset 0 1px rgba(255,255,255,.08), 0 8px 24px rgba(0,0,0,.16);
+}
+.timeline-grid strong,
+.timeline-grid span,
+.timeline-grid small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-table {
+  color: #f1eee7;
+}
+.admin-table table {
+  color: #f1eee7;
+}
+.admin-table tbody tr {
+  background: rgba(255,255,255,.005);
+}
+.admin-table tbody tr:hover,
+.admin-table tr.selected {
+  color: #f8f0df;
+  background: linear-gradient(90deg, rgba(139, 87, 18, 0.38), rgba(35, 25, 11, 0.34));
+}
+.admin-table tr.selected td,
+.admin-table tr.selected small {
+  color: #f8f0df;
+}
+.admin-table th,
+.admin-table td {
+  padding: 12px 13px;
+  line-height: 1.3;
+}
+.today-panel .admin-table table {
+  min-width: 700px;
+}
+.today-panel .admin-table {
+  max-height: 266px;
+}
+.slots-admin {
+  padding: 20px;
+}
+.slots-admin > div:first-of-type {
+  gap: 12px;
+}
+.quick-actions .admin-button {
+  min-height: 58px;
+  font-size: 15px;
+}
+.chart-panel {
+  min-height: 276px;
+}
+.bar-chart {
+  height: 134px;
+}
+@media (min-width: 1501px) {
+  .admin-dashboard-grid {
+    grid-template-columns: minmax(0, 1.42fr) minmax(330px, 0.95fr) minmax(320px, 0.72fr);
+    align-items: start;
+  }
+  .timeline-panel {
+    grid-column: 1 / span 2;
+  }
+  .slots-admin {
+    grid-column: 3;
+  }
+  .today-panel {
+    grid-column: 1;
+  }
+  .chart-panel {
+    grid-column: 2;
+  }
+  .quick-actions {
+    grid-column: 3;
+  }
+  .today-panel,
+  .chart-panel,
+  .quick-actions {
+    min-height: 296px;
+  }
+  .today-panel .admin-table {
+    max-height: 214px;
+  }
+  .today-panel .admin-table table {
+    min-width: 650px;
+  }
+  .chart-panel {
+    min-height: 296px;
+  }
+  .quick-actions {
+    min-height: 296px;
+  }
+}
