@@ -5,6 +5,7 @@ import {
   availability,
   createAppointment,
 } from "../controllers/appointments.js";
+import admin from "./admin.js";
 import {
   availabilityRules,
   appointmentRules,
@@ -12,6 +13,7 @@ import {
   validate,
 } from "../validators/index.js";
 const router = Router();
+router.use("/admin", admin);
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 20,

@@ -1,1102 +1,239 @@
-import { NavLink, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { NavLink, Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import {
-  Bell,
-  Calendar,
-  Camera,
-  Check,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  Clock,
-  Download,
-  Edit3,
-  Eye,
-  Filter,
-  Grid2X2,
-  Image,
-  LayoutDashboard,
-  Lock,
-  LogOut,
-  Mail,
-  MapPin,
-  Menu,
-  MessageSquare,
-  MoreVertical,
-  Phone,
-  Plus,
-  RefreshCw,
-  Scissors,
-  Search,
-  Settings,
-  Shield,
-  Star,
-  Trash2,
-  UploadCloud,
-  User,
-  UserPlus,
-  Users,
-  X,
+  Bell, Calendar, Camera, Check, ChevronDown, ChevronLeft, ChevronRight, Clock, Download, Edit3, Eye,
+  Filter, Grid2X2, Image, LayoutDashboard, Lock, LogOut, Mail, MapPin, Menu, MessageSquare, MoreVertical,
+  Phone, Plus, RefreshCw, Scissors, Search, Settings, Shield, Star, Trash2, User, UserPlus, Users, X,
 } from "lucide-react";
-import { useState } from "react";
-import {
-  formatServicePrice,
-  serviceCategories,
-  services,
-} from "../../../shared/catalog";
-import { business } from "../config/business";
-import { Button } from "../components/Common";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { serviceCategories } from "../../../shared/catalog";
 
+const AdminContext = createContext(null);
 const navItems = [
-  ["dashboard", "Dashboard", LayoutDashboard],
-  ["rendez-vous", "Rendez-vous", Calendar],
-  ["calendrier", "Calendrier", Calendar],
-  ["clients", "Clients", User],
-  ["services", "Services", Scissors],
-  ["horaires", "Horaires", Clock],
-  ["jours-fermes", "Jours fermés", Lock],
-  ["galerie", "Galerie", Image],
-  ["temoignages", "Témoignages", Star],
-  ["parametres", "Paramètres", Settings],
+  ["dashboard", "Dashboard", LayoutDashboard], ["rendez-vous", "Rendez-vous", Calendar], ["calendrier", "Calendrier", Calendar],
+  ["clients", "Clients", User], ["services", "Services", Scissors], ["horaires", "Horaires", Clock], ["jours-fermes", "Jours fermés", Lock],
+  ["galerie", "Galerie", Image], ["temoignages", "Témoignages", Star], ["parametres", "Paramètres", Settings],
 ];
+const emptyState = { business: {}, profile: {}, notifications: {}, barbers: [], clients: [], appointments: [], services: [], hours: [], closedDays: [], reviews: [], gallery: [] };
+const formatDate = (value) => value ? new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(value)) : "—";
+const money = (value) => `${Number(value || 0).toLocaleString("fr-FR")} DH`;
+const servicePrice = (service) => service?.price_type === "starting_from" ? `À partir de ${money(service.price)}` : money(service?.price);
+const statusClass = (value) => String(value || "").toLowerCase().replaceAll(" ", "-");
 
-const barbers = [
-  ["Mohamed", "Barbier Senior", "/images/barber-1.webp"],
-  ["Youssef", "Barbier", "/images/barber-2.webp"],
-  ["Amine", "Barbier", "/images/barber-3.webp"],
-  ["Karim", "Barbier", "/images/barber-1.webp"],
-];
-
-const appointments = [
-  ["09:30", "Karim Benali", "Coupe + Barbe", "Mohamed", "Confirmé", "Payé"],
-  ["10:00", "Reda Hammouch", "Entretien barbe", "Youssef", "Confirmé", "Payé"],
-  ["10:30", "Ilyass Bouzid", "Soin du visage", "Amine", "Confirmé", "Payé"],
-  ["11:00", "Yassine El Amrani", "Coupe + Barbe", "Mohamed", "Confirmé", "Payé"],
-  ["11:30", "Omar Bouzidi", "Coupe moderne", "Youssef", "Annulé", "Remboursé"],
-  ["12:00", "Hanna Kabbaji", "Coupe + soin", "Amine", "Confirmé", "Payé"],
-  ["12:30", "Rachid Alaoui", "Entretien barbe", "Karim", "En attente", "En attente"],
-  ["14:00", "Sofiane Rajae", "Coupe + Barbe", "Mohamed", "Confirmé", "Payé"],
-  ["15:00", "Zakaria Chafaq", "Soin du visage", "Amine", "Terminé", "Payé"],
-  ["16:00", "Amine El Idrissi", "Coupe moderne", "Youssef", "Terminé", "Payé"],
-];
-
-const clients = [
-  ["Karim Benali", "06 12 34 56 78", "karim.benali@gmail.com", "17 Mai 2024", 12, "Coupe + Barbe", "Mohamed", "VIP", "1 850 DH"],
-  ["Reda Hammouch", "06 98 76 54 32", "reda.hammouch@gmail.com", "16 Mai 2024", 9, "Entretien barbe", "Youssef", "Actif", "1 230 DH"],
-  ["Ilyass Bouzid", "06 21 45 78 90", "ilyass.bouzid@gmail.com", "15 Mai 2024", 8, "Soin du visage", "Amine", "Actif", "1 050 DH"],
-  ["Yassine El Amrani", "06 56 78 12 34", "yassine.amrani@gmail.com", "14 Mai 2024", 7, "Coupe + Barbe", "Mohamed", "VIP", "2 300 DH"],
-  ["Omar Bouzidi", "06 11 22 33 44", "omar.bouzidi@gmail.com", "13 Mai 2024", 6, "Coupe moderne", "Youssef", "Actif", "980 DH"],
-  ["Hanna Kabbaji", "06 33 44 55 66", "hanna.kabbaji@gmail.com", "10 Mai 2024", 5, "Coupe + soin", "Amine", "Actif", "870 DH"],
-  ["Rachid Alaoui", "06 77 88 99 00", "rachid.alaoui@gmail.com", "08 Mai 2024", 4, "Entretien barbe", "Karim", "Nouveau", "560 DH"],
-  ["Sofiane Rajae", "06 55 66 77 88", "sofiane.rajae@gmail.com", "07 Mai 2024", 4, "Coupe + Barbe", "Mohamed", "Actif", "760 DH"],
-  ["Zakaria Chafaq", "06 44 55 66 77", "zakaria.chafaq@gmail.com", "05 Mai 2024", 3, "Soin du visage", "Amine", "Nouveau", "450 DH"],
-  ["Amine El Idrissi", "06 66 77 88 99", "amine.idrissi@gmail.com", "03 Mai 2024", 3, "Coupe moderne", "Youssef", "Actif", "690 DH"],
-  ["Mehdi Tahiri", "06 99 11 22 33", "mehdi.tahiri@gmail.com", "01 Mai 2024", 2, "Coupe moderne", "Mohamed", "Actif", "400 DH"],
-  ["Youssef Alaoui", "06 88 99 00 11", "youssef.alaoui@gmail.com", "30 Avr. 2024", 2, "Entretien barbe", "Karim", "Nouveau", "320 DH"],
-];
-
-const reviews = [
-  ["Yassine El Amrani", "Meilleur coiffeur de la ville ! Service professionnel, équipe accueillante et résultats toujours au top. Je recommande à 100%.", "Approuvé", 5, "15 Mai 2024"],
-  ["Adil Benjelloun", "Ambiance exceptionnelle et service irréprochable. Chaque visite est une expérience unique. Merci à toute l’équipe !", "Approuvé", 5, "12 Mai 2024"],
-  ["Omar Tazi", "Très satisfait de la coupe et de la barbe. Le souci du détail fait toute la différence. À bientôt !", "Approuvé", 5, "10 Mai 2024"],
-  ["Mehdi Alaoui", "Professionnalisme, ponctualité et qualité. Je ne confie mes cheveux à personne d’autre. ER RAMMACH c’est la référence.", "Approuvé", 5, "08 Mai 2024"],
-  ["Karim Bouzid", "Accueil chaleureux, cadre élégant et coupe parfaite. C’est devenu mon rituel chaque semaine.", "Approuvé", 5, "05 Mai 2024"],
-  ["Soufiane El Idrissi", "J’ai essayé plusieurs salons, mais celui-ci est vraiment au-dessus du lot. Bravo !", "Approuvé", 5, "03 Mai 2024"],
-  ["Hamza Lahlou", "Bon service dans l’ensemble, mais j’ai eu un léger retard sur mon rendez-vous.", "En attente", 4, "02 Mai 2024"],
-  ["Rachid Belkacem", "La coupe est bien faite, mais j’aurais aimé plus de conseils sur le style.", "En attente", 4, "01 Mai 2024"],
-];
-
-const closedDays = [
-  ["16 Juin 2024", "Dimanche", "Férié", "Aïd al-Adha", "Toute la journée", 18, "Actif"],
-  ["14 Juil. 2024", "Dimanche", "Férié", "Fête Nationale", "Toute la journée", 15, "Planifié"],
-  ["15 Août 2024", "Jeudi", "Férié", "Assomption", "Toute la journée", 12, "Planifié"],
-  ["01 Sept. 2024", "Dimanche", "Maintenance", "Maintenance du salon", "Toute la journée", 9, "Planifié"],
-  ["10 Sept. 2024", "Mardi", "Formation", "Formation équipe", "09:00 - 17:00", 6, "Planifié"],
-  ["06 Oct. 2024", "Dimanche", "Congé exceptionnel", "Événement familial", "Toute la journée", 11, "Planifié"],
-  ["Tous les Lundis", "Lundi", "Récurrent", "Fermeture hebdomadaire", "Toute la journée", 0, "Actif"],
-  ["20 Mai 2024", "Lundi", "Maintenance", "Réparation climatisation", "09:00 - 13:00", 4, "Passé"],
-  ["01 Mai 2024", "Mercredi", "Férié", "Fête du Travail", "Toute la journée", 10, "Passé"],
-];
-
-function StatCard({ icon: Icon, title, value, detail, trend = "+ 12%" }) {
-  return (
-    <article className="admin-stat">
-      <span className="admin-stat-icon">
-        <Icon />
-      </span>
-      <div>
-        <p>{title}</p>
-        <strong>{value}</strong>
-        <small className={trend.startsWith("-") ? "down" : ""}>
-          {trend} vs mois dernier
-        </small>
-        {detail && <em>{detail}</em>}
-      </div>
-      <Sparkline />
-    </article>
-  );
+async function requestAdmin(path, options = {}) {
+  const response = await fetch(`/api/admin${path}`, {
+    headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+    ...options,
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok || payload.success === false) throw new Error(payload.message || "Action admin impossible.");
+  return payload;
 }
 
-function Sparkline() {
-  return (
-    <svg className="sparkline" viewBox="0 0 110 40" aria-hidden="true">
-      <path d="M2 31 C14 34 17 20 29 22 S47 34 57 16 72 11 80 25 96 11 108 16" />
-    </svg>
-  );
+function useAdmin() {
+  const value = useContext(AdminContext);
+  if (!value) throw new Error("AdminContext manquant");
+  return value;
 }
 
-function Badge({ children }) {
-  const status = String(children).toLowerCase();
-  return <span className={`admin-badge ${status.replaceAll(" ", "-")}`}>{children}</span>;
-}
+function AdminProvider({ children }) {
+  const [state, setState] = useState(emptyState);
+  const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState(null);
+  const [modal, setModal] = useState(null);
 
-function AdminButton({ children, danger = false, outline = false, icon: Icon = Plus }) {
+  const notify = (message, type = "success") => {
+    setToast({ message, type });
+    window.clearTimeout(AdminProvider.toastTimer);
+    AdminProvider.toastTimer = window.setTimeout(() => setToast(null), 3200);
+  };
+
+  const reload = async () => {
+    setLoading(true);
+    try {
+      const payload = await requestAdmin("/state");
+      setState({ ...emptyState, ...payload.data });
+    } catch (error) {
+      notify(error.message, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { reload(); }, []);
+
+  const mutate = async (collection, method, body, id) => {
+    const path = id ? `/${collection}/${id}` : `/${collection}`;
+    const payload = await requestAdmin(path, { method, body: body ? JSON.stringify(body) : undefined });
+    if (payload.data?.state) setState({ ...emptyState, ...payload.data.state });
+    notify(payload.message || "Action enregistrée.");
+    return payload.data?.item;
+  };
+
+  const addItem = (collection, defaults = {}) => setModal({ mode: "add", collection, item: defaults });
+  const editItem = (collection, item) => setModal({ mode: "edit", collection, item });
+  const deleteItem = async (collection, item) => {
+    if (!window.confirm(`Supprimer « ${item.name || item.client || item.reason || item.title || item.id} » ?`)) return;
+    await mutate(collection, "DELETE", null, item.id);
+  };
+  const patchSettings = async (collection, values) => mutate(collection, "PATCH", values);
+
+  const value = { state, loading, notify, reload, mutate, addItem, editItem, deleteItem, patchSettings };
   return (
-    <button className={`admin-button ${outline ? "outline" : ""} ${danger ? "danger" : ""}`}>
-      <Icon size={17} />
+    <AdminContext.Provider value={value}>
       {children}
-    </button>
+      {toast && <div className={`admin-toast ${toast.type}`}>{toast.message}</div>}
+      {modal && <AdminModal modal={modal} close={() => setModal(null)} mutate={mutate} />}
+    </AdminContext.Provider>
   );
 }
+
+function AdminModal({ modal, close, mutate }) {
+  const fields = fieldMap[modal.collection] || [];
+  const [form, setForm] = useState(() => ({ ...modal.item }));
+  const title = `${modal.mode === "add" ? "Ajouter" : "Modifier"} ${labels[modal.collection] || "élément"}`;
+  const submit = async (event) => {
+    event.preventDefault();
+    const cleaned = Object.fromEntries(Object.entries(form).map(([key, value]) => [key, ["price", "duration", "spent", "appointments", "slots", "rating", "bookingsThisMonth", "impacted"].includes(key) ? Number(value || 0) : value]));
+    await mutate(modal.collection, modal.mode === "add" ? "POST" : "PATCH", cleaned, modal.mode === "edit" ? modal.item.id : undefined);
+    close();
+  };
+  return (
+    <div className="admin-modal-backdrop" role="presentation" onMouseDown={close}>
+      <form className="admin-modal admin-panel" onSubmit={submit} onMouseDown={(event) => event.stopPropagation()}>
+        <header><h2>{title}</h2><button type="button" onClick={close}><X size={18} /></button></header>
+        <div className="settings-form two">
+          {fields.map((field) => <label key={field.name}>{field.label}<input type={field.type || "text"} value={form[field.name] ?? ""} onChange={(event) => setForm((prev) => ({ ...prev, [field.name]: event.target.value }))} required={field.required} /></label>)}
+        </div>
+        <footer><AdminButton type="submit" icon={Check}>Enregistrer</AdminButton><AdminButton type="button" outline icon={X} onClick={close}>Annuler</AdminButton></footer>
+      </form>
+    </div>
+  );
+}
+
+const labels = { appointments: "un rendez-vous", clients: "un client", services: "un service", closedDays: "un jour fermé", reviews: "un témoignage", gallery: "une photo" };
+const nameLabels = { date: "Date", time: "Heure", client: "Client", phone: "Téléphone", service: "Service", barber: "Barbier", status: "Statut", payment: "Paiement", notes: "Notes", name: "Nom", username: "Nom d’utilisateur", email: "Email", spent: "Dépensé", appointments: "Rendez-vous", favoriteService: "Service favori", favoriteBarber: "Barbier favori", categoryLabel: "Catégorie", duration: "Durée", price: "Prix", price_type: "Type de prix", description: "Description", bookingsThisMonth: "Réservations ce mois", type: "Type", reason: "Raison", impacted: "Rendez-vous impactés", rating: "Note", text: "Texte", title: "Titre", image: "Image", role: "Rôle", birthDate: "Date de naissance", address: "Adresse", day: "Jour", open: "Ouverture", close: "Fermeture", pause: "Pause", slots: "Créneaux" };
+const fieldMap = {
+  appointments: ["date", "time", "client", "phone", "service", "barber", "status", "payment", "notes"].map((name) => ({ name, label: nameLabels[name], required: !["notes"].includes(name), type: name === "date" ? "date" : undefined })),
+  clients: ["name", "phone", "email", "status", "spent", "appointments", "favoriteService", "favoriteBarber", "notes"].map((name) => ({ name, label: nameLabels[name], type: ["spent", "appointments"].includes(name) ? "number" : undefined })),
+  services: ["name", "categoryLabel", "duration", "price", "price_type", "description", "bookingsThisMonth"].map((name) => ({ name, label: nameLabels[name], type: ["duration", "price", "bookingsThisMonth"].includes(name) ? "number" : undefined })),
+  hours: ["day", "status", "open", "close", "pause", "slots"].map((name) => ({ name, label: nameLabels[name], type: name === "slots" ? "number" : undefined })),
+  closedDays: ["date", "type", "reason", "duration", "impacted", "status"].map((name) => ({ name, label: nameLabels[name], type: name === "date" ? "date" : name === "impacted" ? "number" : undefined })),
+  reviews: ["client", "rating", "text", "status", "date"].map((name) => ({ name, label: nameLabels[name], type: name === "rating" ? "number" : name === "date" ? "date" : undefined })),
+  gallery: ["title", "category", "image", "date"].map((name) => ({ name, label: nameLabels[name], type: name === "date" ? "date" : undefined })),
+};
 
 function AdminLayout({ children }) {
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const active =
-    navItems.find(([id]) => location.pathname.includes(`/admin/${id}`)) ||
-    navItems[0];
+  const { state, loading } = useAdmin();
+  const active = navItems.find(([id]) => location.pathname.includes(`/admin/${id}`)) || ["profile", "Mon Profil"];
   return (
     <div className={`admin-shell ${open ? "nav-open" : ""}`}>
       <aside className="admin-sidebar">
-        <NavLink to="/admin/dashboard" className="admin-logo">
-          <img src="/images/logo.webp" alt="ER RAMMACH Mohamed Barber Shop" />
-        </NavLink>
-        <nav aria-label="Navigation administrateur">
-          {navItems.map(([id, label, Icon]) => (
-            <NavLink key={id} to={`/admin/${id}`} onClick={() => setOpen(false)}>
-              <Icon size={20} />
-              {label}
-            </NavLink>
-          ))}
-          <NavLink to="/admin/profile" onClick={() => setOpen(false)}>
-            <User size={20} />
-            Mon Profil
-          </NavLink>
-        </nav>
-        <div className="admin-brand-card">
-          <img src="/images/logo.webp" alt="" />
-          <small>Style · Confiance · Excellence</small>
-        </div>
+        <NavLink to="/admin/dashboard" className="admin-logo"><img src="/images/logo.webp" alt="ER RAMMACH" /></NavLink>
+        <nav>{navItems.map(([id, label, Icon]) => <NavLink key={id} to={`/admin/${id}`} onClick={() => setOpen(false)}><Icon size={20} />{label}</NavLink>)}<NavLink to="/admin/profile" onClick={() => setOpen(false)}><User size={20} />Mon Profil</NavLink></nav>
+        <div className="admin-brand-card"><img src="/images/logo.webp" alt="" /><small>Style · Confiance · Excellence</small></div>
       </aside>
       <div className="admin-main">
         <header className="admin-topbar">
-          <button className="admin-menu" aria-label="Ouvrir le menu" onClick={() => setOpen((value) => !value)}>
-            {open ? <X /> : <Menu />}
-          </button>
+          <button className="admin-menu" aria-label="Ouvrir le menu" onClick={() => setOpen((value) => !value)}>{open ? <X /> : <Menu />}</button>
           <h1>{active[1]}</h1>
-          <div className="admin-user">
-            <button aria-label="Notifications">
-              <Bell />
-              <span>3</span>
-            </button>
-            <img src="/images/barber-1.webp" alt="" />
-            <div>
-              <strong>Mohamed Er rammach</strong>
-              <small>Administrateur</small>
-            </div>
-            <ChevronDown size={18} />
-          </div>
+          <div className="admin-user"><button aria-label="Notifications"><Bell /><span>{state.appointments.filter((a) => a.status === "En attente").length}</span></button><img src={state.profile.image || "/images/barber-1.webp"} alt="" /><div><strong>{state.profile.name || "Administrateur"}</strong><small>{state.profile.role || "Administrateur"}</small></div><ChevronDown size={18} /></div>
         </header>
-        <main className="admin-content">{children}</main>
+        <main className="admin-content">{loading ? <section className="admin-panel loading-admin">Chargement de l’administration…</section> : children}</main>
       </div>
     </div>
   );
 }
 
-function Filters({ search = "Rechercher..." }) {
-  return (
-    <section className="admin-panel admin-filters">
-      <label>
-        <Search size={17} />
-        <input placeholder={search} />
-      </label>
-      <select aria-label="Statut">
-        <option>Tous les statuts</option>
-      </select>
-      <select aria-label="Barbier">
-        <option>Tous les barbiers</option>
-      </select>
-      <select aria-label="Service">
-        <option>Tous les services</option>
-      </select>
-      <AdminButton outline icon={RefreshCw}>
-        Réinitialiser
-      </AdminButton>
-    </section>
-  );
+function StatCard({ icon: Icon, title, value, detail, trend = "+ 12%" }) {
+  return <article className="admin-stat"><span className="admin-stat-icon"><Icon /></span><div><p>{title}</p><strong>{value}</strong><small className={trend.startsWith("-") ? "down" : ""}>{trend} vs mois dernier</small>{detail && <em>{detail}</em>}</div><Sparkline /></article>;
 }
+function Sparkline() { return <svg className="sparkline" viewBox="0 0 110 40" aria-hidden="true"><path d="M2 31 C14 34 17 20 29 22 S47 34 57 16 72 11 80 25 96 11 108 16" /></svg>; }
+function Badge({ children }) { return <span className={`admin-badge ${statusClass(children)}`}>{children}</span>; }
+function AdminButton({ children, danger = false, outline = false, icon: Icon = Plus, type = "button", onClick }) { return <button type={type} onClick={onClick} className={`admin-button ${outline ? "outline" : ""} ${danger ? "danger" : ""}`}><Icon size={17} />{children}</button>; }
+function exportCsv(filename, rows) {
+  const csv = rows.map((row) => row.map((cell) => `"${String(cell ?? "").replaceAll('"', '""')}"`).join(",")).join("\n");
+  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  const link = document.createElement("a"); link.href = url; link.download = filename; link.click(); URL.revokeObjectURL(url);
+}
+function useSelection(items) { const [selectedId, setSelectedId] = useState(null); const selected = items.find((item) => item.id === selectedId) || items[0]; useEffect(() => { if (!selectedId && items[0]) setSelectedId(items[0].id); }, [items, selectedId]); return [selected, setSelectedId]; }
+function useSearch(items, keys) { const [query, setQuery] = useState(""); const filtered = useMemo(() => items.filter((item) => keys.some((key) => String(item[key] || "").toLowerCase().includes(query.toLowerCase()))), [items, keys, query]); return { query, setQuery, filtered }; }
 
 function Dashboard() {
-  return (
-    <>
-      <section className="admin-stats four">
-        <StatCard icon={Calendar} title="RENDEZ-VOUS AUJOURD’HUI" value="18" trend="+ 12%" />
-        <StatCard icon={Users} title="CETTE SEMAINE" value="87" trend="+ 18%" />
-        <StatCard icon={Clock} title="CRÉNEAUX DISPONIBLES" value="23" detail="Aujourd’hui" trend="+ 9%" />
-        <StatCard icon={MessageSquare} title="CHIFFRE ESTIMÉ" value="2 850 DH" trend="+ 15%" />
-      </section>
-      <section className="admin-dashboard-grid">
-        <CalendarTimeline />
-        <SlotsPanel />
-        <TodayTable />
-        <WeeklyChart />
-        <QuickActions />
-      </section>
-    </>
-  );
+  const { state, addItem, mutate } = useAdmin();
+  const todayItems = state.appointments.filter((a) => a.date === "2024-05-18");
+  const revenue = todayItems.filter((a) => a.payment === "Payé").length * 100;
+  return <><section className="admin-stats four"><StatCard icon={Calendar} title="RENDEZ-VOUS AUJOURD’HUI" value={todayItems.length} /><StatCard icon={Users} title="CETTE SEMAINE" value={state.appointments.length + 77} trend="+ 18%" /><StatCard icon={Clock} title="CRÉNEAUX DISPONIBLES" value="23" detail="Aujourd’hui" /><StatCard icon={MessageSquare} title="CHIFFRE ESTIMÉ" value={money(revenue)} trend="+ 15%" /></section><section className="admin-dashboard-grid"><CalendarTimeline appointments={todayItems} barbers={state.barbers} /><SlotsPanel /><TodayTable appointments={todayItems} /><WeeklyChart total={state.appointments.length + 77} /><section className="admin-panel quick-actions"><h2>ACTIONS RAPIDES</h2><AdminButton onClick={() => addItem("appointments", { date: "2024-05-18", status: "En attente", payment: "En attente" })}>Ajouter un rendez-vous</AdminButton><AdminButton outline icon={Lock} onClick={() => mutate("closedDays", "POST", { date: "2024-05-18", type: "Blocage", reason: "Créneau bloqué", duration: "30 min", impacted: 0, status: "Actif" })}>Bloquer un créneau</AdminButton><AdminButton outline icon={Scissors} onClick={() => addItem("services", { active: true, price_type: "fixed" })}>Ajouter un service</AdminButton></section></section></>;
 }
-
-function CalendarTimeline() {
-  const blocks = [
-    [0, 2, "Karim Benali", "Coupe + Barbe", "09:30 - 10:30"],
-    [1, 4, "Reda Hammouch", "Entretien barbe", "10:00 - 10:30"],
-    [2, 3, "Ilyass Bouzid", "Soin du visage", "11:00 - 12:00"],
-    [0, 6, "Yassine El Amrani", "Coupe + Barbe", "12:00 - 13:00"],
-    [3, 5, "Pause", "", "12:30 - 13:00", "pause"],
-    [1, 8, "Omar Boudali", "Coupe moderne", "13:30 - 14:30"],
-    [2, 9, "Hamza Kabbaj", "Coupe moderne", "14:30 - 15:30"],
-    [0, 10, "Mehdi Tahiri", "Coupe moderne", "15:00 - 16:00"],
-    [3, 11, "Client Walk-in", "Coupe moderne", "16:00 - 17:00"],
-    [1, 12, "Sofiane Rajoe", "Coupe + Barbe", "17:00 - 18:00"],
-    [2, 14, "Zakaria Chafiq", "Entretien barbe", "18:30 - 19:00"],
-  ];
-  return (
-    <section className="admin-panel timeline-panel">
-      <div className="admin-panel-head">
-        <h2>CALENDRIER - AUJOURD’HUI</h2>
-        <button>18 Mai 2024</button>
-      </div>
-      <div className="timeline">
-        <div className="timeline-hours">
-          <span />
-          {["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"].map((hour) => (
-            <b key={hour}>{hour}</b>
-          ))}
-        </div>
-        {barbers.map(([name, role, image], row) => (
-          <div className="timeline-row" key={name}>
-            <div className="timeline-barber">
-              <img src={image} alt="" />
-              <strong>{name}</strong>
-              <small>{role}</small>
-            </div>
-            <div className="timeline-grid">
-              {blocks
-                .filter(([blockRow]) => blockRow === row)
-                .map(([, start, client, service, time, type]) => (
-                  <article className={type === "pause" ? "pause" : ""} style={{ gridColumn: `${start} / span 2` }} key={client + time}>
-                    <strong>{client}</strong>
-                    {service && <span>{service}</span>}
-                    <small>{time}</small>
-                  </article>
-                ))}
-            </div>
-          </div>
-        ))}
-      </div>
-      <Legend items={["Réservé", "Disponible", "Bloqué", "Pause"]} />
-    </section>
-  );
+function CalendarTimeline({ appointments, barbers }) {
+  const hours = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
+  return <section className="admin-panel timeline-panel"><div className="admin-panel-head"><h2>CALENDRIER - AUJOURD’HUI</h2><button>18 Mai 2024</button></div><div className="timeline"><div className="timeline-hours"><span />{hours.map((hour) => <b key={hour}>{hour}</b>)}</div>{barbers.map((barber) => <div className="timeline-row" key={barber.id}><div className="timeline-barber"><img src={barber.image} alt="" /><strong>{barber.name.split(" ")[0]}</strong><small>{barber.role}</small></div><div className="timeline-grid">{appointments.filter((item) => item.barber.includes(barber.name.split(" ")[0])).map((item) => { const start = Math.max(1, Number(item.time.slice(0, 2)) - 8); return <article key={item.id} style={{ gridColumn: `${start} / span 2` }}><strong>{item.client}</strong><span>{item.service}</span><small>{item.time}</small></article>; })}</div></div>)}</div><Legend items={["Réservé", "Disponible", "Bloqué", "Pause"]} /></section>;
 }
-
-function SlotsPanel() {
-  return (
-    <section className="admin-panel slots-admin">
-      <h2>DISPONIBILITÉ DES CRÉNEAUX - AUJOURD’HUI</h2>
-      <div>
-        {["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30"].map((time, index) => (
-          <button className={["free", "free", "free", "reserved", "free", "reserved", "blocked", "closed", "free", "reserved", "reserved", "free", "reserved", "reserved", "free", "free", "blocked", "reserved", "reserved", "free", "free", "free", "closed", "closed"][index]} key={time}>
-            {time}
-            <span />
-          </button>
-        ))}
-      </div>
-      <Legend items={["Disponible", "Réservé", "Bloqué", "Fermé"]} />
-    </section>
-  );
-}
-
-function Legend({ items }) {
-  return (
-    <div className="admin-legend">
-      {items.map((item) => (
-        <span key={item}>
-          <i />
-          {item}
-        </span>
-      ))}
-    </div>
-  );
-}
-
-function TodayTable() {
-  return (
-    <section className="admin-panel today-panel">
-      <h2>RENDEZ-VOUS D’AUJOURD’HUI</h2>
-      <div className="admin-table compact">
-        <table>
-          <thead>
-            <tr>
-              <th>Heure</th>
-              <th>Client</th>
-              <th>Service</th>
-              <th>Barbier</th>
-              <th>Statut</th>
-              <th>Paiement</th>
-            </tr>
-          </thead>
-          <tbody>
-            {appointments.slice(0, 5).map((row) => (
-              <tr key={row.join("-")}>
-                {row.map((cell, index) => (
-                  <td key={cell}>{index > 3 ? <Badge>{cell}</Badge> : cell}</td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <button className="admin-link">Voir tous les rendez-vous <ChevronRight size={16} /></button>
-    </section>
-  );
-}
-
-function WeeklyChart() {
-  return (
-    <section className="admin-panel chart-panel">
-      <div className="admin-panel-head">
-        <h2>RENDEZ-VOUS DE LA SEMAINE</h2>
-        <select aria-label="Période">
-          <option>Cette semaine</option>
-        </select>
-      </div>
-      <strong>87</strong>
-      <small>+ 18% vs semaine dernière</small>
-      <div className="bar-chart">
-        {[12, 15, 18, 16, 21, 32, 28].map((value, index) => (
-          <span style={{ height: `${value * 3}px` }} key={value + index}>
-            <b>{value}</b>
-          </span>
-        ))}
-      </div>
-      <div className="chart-days">
-        {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((day) => (
-          <span key={day}>{day}</span>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function QuickActions() {
-  return (
-    <section className="admin-panel quick-actions">
-      <h2>ACTIONS RAPIDES</h2>
-      <AdminButton>Ajouter un rendez-vous</AdminButton>
-      <AdminButton outline icon={Lock}>Bloquer un créneau</AdminButton>
-      <AdminButton outline icon={Scissors}>Ajouter un service</AdminButton>
-    </section>
-  );
-}
+function SlotsPanel() { return <section className="admin-panel slots-admin"><h2>DISPONIBILITÉ DES CRÉNEAUX - AUJOURD’HUI</h2><div>{["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30"].map((time, index) => <button className={["free", "free", "free", "reserved", "free", "reserved", "blocked", "closed"][index % 8]} key={time}>{time}<span /></button>)}</div><Legend items={["Disponible", "Réservé", "Bloqué", "Fermé"]} /></section>; }
+function TodayTable({ appointments }) { const navigate = useNavigate(); return <section className="admin-panel today-panel"><h2>RENDEZ-VOUS D’AUJOURD’HUI</h2><AdminTable heads={["Heure", "Client", "Service", "Barbier", "Statut", "Paiement"]} rows={appointments.slice(0, 5).map((a) => [a.time, a.client, a.service, a.barber, <Badge>{a.status}</Badge>, <Badge>{a.payment}</Badge>])} /><button className="admin-link" onClick={() => navigate("/admin/rendez-vous")}>Voir tous les rendez-vous <ChevronRight size={16} /></button></section>; }
+function WeeklyChart({ total = 87 }) { return <section className="admin-panel chart-panel"><div className="admin-panel-head"><h2>RENDEZ-VOUS DE LA SEMAINE</h2><select><option>Cette semaine</option></select></div><strong>{total}</strong><small>+ 18% vs semaine dernière</small><div className="bar-chart">{[12, 15, 18, 16, 21, 32, 28].map((value, index) => <span style={{ height: `${value * 3}px` }} key={index}><b>{value}</b></span>)}</div><div className="chart-days">{["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((day) => <span key={day}>{day}</span>)}</div></section>; }
+function Legend({ items }) { return <div className="admin-legend">{items.map((item) => <span key={item}><i />{item}</span>)}</div>; }
 
 function AppointmentsPage() {
-  return (
-    <>
-      <section className="admin-stats five">
-        <StatCard icon={Calendar} title="AUJOURD’HUI" value="18" detail="Rendez-vous" />
-        <StatCard icon={Check} title="CONFIRMÉS" value="12" detail="66.7%" />
-        <StatCard icon={Clock} title="EN ATTENTE" value="3" detail="16.7%" />
-        <StatCard icon={X} title="ANNULÉS" value="1" detail="5.6%" trend="- 4%" />
-        <StatCard icon={Star} title="TERMINÉS" value="2" detail="11.1%" />
-      </section>
-      <Filters search="Rechercher client ou téléphone..." />
-      <section className="admin-split">
-        <AppointmentsTable />
-        <AppointmentDetail />
-      </section>
-    </>
-  );
-}
-
-function AppointmentsTable() {
-  return (
-    <section className="admin-panel">
-      <div className="admin-table">
-        <table>
-          <thead>
-            <tr>
-              {["Heure", "Client", "Téléphone", "Service", "Barbier", "Date", "Statut", "Paiement", "Actions"].map((head) => (
-                <th key={head}>{head}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {appointments.map((row, index) => (
-              <tr className={index === 0 ? "selected" : ""} key={row.join("-")}>
-                <td>{row[0]}</td>
-                <td><Avatar name={row[1]} index={index} /></td>
-                <td>06 {12 + index} 34 56 78</td>
-                <td>{row[2]}<small>30 min</small></td>
-                <td><Avatar name={row[3]} index={index + 1} small /></td>
-                <td>18 Mai 2024</td>
-                <td><Badge>{row[4]}</Badge></td>
-                <td><Badge>{row[5]}</Badge></td>
-                <td><RowActions /></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <TableFooter total="18 rendez-vous" />
-    </section>
-  );
-}
-
-function AppointmentDetail() {
-  return (
-    <aside className="admin-panel detail-card">
-      <h2>DÉTAIL DU RENDEZ-VOUS SÉLECTIONNÉ</h2>
-      <div className="detail-client">
-        <img src="/images/barber-1.webp" alt="" />
-        <div>
-          <strong>Karim Benali</strong>
-          <Badge>Client fidèle</Badge>
-          <small><Phone size={14} /> 06 12 34 56 78</small>
-          <small><Mail size={14} /> karim.benali@gmail.com</small>
-        </div>
-      </div>
-      <DetailList
-        rows={[
-          ["Service réservé", "Coupe + Barbe"],
-          ["Barbier", "Mohamed"],
-          ["Date et heure", "Samedi 18 Mai 2024 · 09:30"],
-          ["Statut", "Confirmé"],
-          ["Paiement", "Payé · 100 DH"],
-          ["Notes", "Client préfère une coupe dégradée basse."],
-        ]}
-      />
-      <AdminButton icon={Edit3}>Modifier le rendez-vous</AdminButton>
-      <div className="detail-actions">
-        <AdminButton outline icon={Check}>Confirmer</AdminButton>
-        <AdminButton danger outline icon={X}>Annuler</AdminButton>
-      </div>
-    </aside>
-  );
-}
-
-function CalendarPage() {
-  return (
-    <>
-      <section className="admin-stats four">
-        <StatCard icon={Calendar} title="AUJOURD’HUI" value="18" detail="Rendez-vous" />
-        <StatCard icon={Users} title="CETTE SEMAINE" value="87" detail="Rendez-vous" />
-        <StatCard icon={Check} title="CRÉNEAUX RÉSERVÉS" value="236" />
-        <StatCard icon={Clock} title="CRÉNEAUX DISPONIBLES" value="128" />
-      </section>
-      <section className="calendar-admin-grid">
-        <MonthCalendar />
-        <DayAppointments />
-      </section>
-    </>
-  );
-}
-
-function MonthCalendar() {
-  const days = Array.from({ length: 35 }, (_, index) => index + 1);
-  return (
-    <section className="admin-panel month-panel">
-      <div className="admin-panel-head">
-        <div>
-          <button><ChevronLeft size={17} /></button>
-          <button><ChevronRight size={17} /></button>
-        </div>
-        <h2>Mai 2024</h2>
-        <div className="segmented"><button>Jour</button><button>Semaine</button><button className="active">Mois</button></div>
-      </div>
-      <div className="month-grid">
-        {["LUN", "MAR", "MER", "JEU", "VEN", "SAM", "DIM"].map((day) => <b key={day}>{day}</b>)}
-        {days.map((day) => (
-          <article className={day === 18 ? "selected" : day % 7 === 5 ? "blocked" : ""} key={day}>
-            <strong>{day <= 31 ? day : day - 31}</strong>
-            {day % 3 !== 0 && <small><i /> {day % 4}</small>}
-            {day % 2 === 0 && <span>09:30 Karim B.</span>}
-            {day % 5 === 0 && <span className="wait">14:00 Hamza K.</span>}
-            {day % 7 === 5 && <em>Fermé</em>}
-          </article>
-        ))}
-      </div>
-      <Legend items={["Confirmé / Disponible", "En attente", "Annulé / Bloqué", "Fermé / Passé"]} />
-    </section>
-  );
-}
-
-function DayAppointments() {
-  return (
-    <aside className="admin-panel day-panel">
-      <h2>RENDEZ-VOUS DU 18 MAI 2024</h2>
-      {appointments.slice(0, 4).map((row, index) => (
-        <article key={row.join("-")}>
-          <b>{row[0]}</b>
-          <Avatar name={row[1]} index={index} />
-          <span>{row[2]}<small>{row[3]}</small></span>
-          <Badge>{index === 2 ? "En attente" : index === 3 ? "Annulé" : "Confirmé"}</Badge>
-          <MoreVertical size={18} />
-        </article>
-      ))}
-      <div className="mini-stats">
-        <span>Rendez-vous <b>4</b></span>
-        <span>Confirmés <b>2</b></span>
-        <span>En attente <b>1</b></span>
-        <span>Annulés <b>1</b></span>
-      </div>
-      <QuickList />
-    </aside>
-  );
+  const { state, addItem, editItem, deleteItem, mutate } = useAdmin();
+  const { query, setQuery, filtered } = useSearch(state.appointments, ["client", "phone", "service", "barber", "status"]);
+  const [selected, setSelectedId] = useSelection(filtered);
+  return <><section className="admin-stats five"><StatCard icon={Calendar} title="AUJOURD’HUI" value={state.appointments.length} /><StatCard icon={Check} title="CONFIRMÉS" value={state.appointments.filter((a) => a.status === "Confirmé").length} /><StatCard icon={Clock} title="EN ATTENTE" value={state.appointments.filter((a) => a.status === "En attente").length} /><StatCard icon={X} title="ANNULÉS" value={state.appointments.filter((a) => a.status === "Annulé").length} trend="- 4%" /><StatCard icon={Star} title="TERMINÉS" value={state.appointments.filter((a) => a.status === "Terminé").length} /></section><Toolbar query={query} setQuery={setQuery} placeholder="Rechercher client ou téléphone..." onAdd={() => addItem("appointments", { date: "2024-05-18", status: "En attente", payment: "En attente" })} onExport={() => exportCsv("rendez-vous.csv", filtered.map(Object.values))} /><section className="admin-split"><section className="admin-panel"><AdminTable heads={["Heure", "Client", "Téléphone", "Service", "Barbier", "Date", "Statut", "Paiement", "Actions"]} rows={filtered.map((a, index) => [a.time, <Avatar name={a.client} index={index} />, a.phone, a.service, <Avatar name={a.barber} index={index + 1} small />, formatDate(a.date), <Badge>{a.status}</Badge>, <Badge>{a.payment}</Badge>, <RowActions onView={() => setSelectedId(a.id)} onEdit={() => editItem("appointments", a)} onDelete={() => deleteItem("appointments", a)} />])} rowIds={filtered.map((a) => a.id)} selectedId={selected?.id} onSelect={setSelectedId} /><TableFooter total={`${filtered.length} rendez-vous`} /></section><DetailCard title="DÉTAIL DU RENDEZ-VOUS SÉLECTIONNÉ" item={selected} rows={selected && [["Service réservé", selected.service], ["Barbier", selected.barber], ["Date et heure", `${formatDate(selected.date)} · ${selected.time}`], ["Statut", selected.status], ["Paiement", selected.payment], ["Notes", selected.notes || "—"]]} actions={<><AdminButton icon={Edit3} onClick={() => editItem("appointments", selected)}>Modifier le rendez-vous</AdminButton><div className="detail-actions"><AdminButton outline icon={Check} onClick={() => mutate("appointments", "PATCH", { status: "Confirmé" }, selected.id)}>Confirmer</AdminButton><AdminButton danger outline icon={X} onClick={() => mutate("appointments", "PATCH", { status: "Annulé", payment: "Remboursé" }, selected.id)}>Annuler</AdminButton></div></>} /></section></>;
 }
 
 function ClientsPage() {
-  return (
-    <>
-      <section className="admin-stats four">
-        <StatCard icon={Users} title="TOTAL CLIENTS" value="248" />
-        <StatCard icon={UserPlus} title="NOUVEAUX CE MOIS" value="18" />
-        <StatCard icon={Star} title="CLIENTS FIDÈLES" value="76" />
-        <StatCard icon={RefreshCw} title="TAUX DE RETOUR" value="68%" />
-      </section>
-      <Filters search="Nom, téléphone ou e-mail..." />
-      <section className="admin-split">
-        <section className="admin-panel">
-          <div className="admin-table">
-            <table>
-              <thead>
-                <tr>
-                  {["Client", "Téléphone", "E-mail", "Dernière visite", "RDV", "Service favori", "Barbier favori", "Statut", "Dépensé", "Actions"].map((head) => <th key={head}>{head}</th>)}
-                </tr>
-              </thead>
-              <tbody>
-                {clients.map((client, index) => (
-                  <tr className={index === 0 ? "selected" : ""} key={client[0]}>
-                    <td><Avatar name={client[0]} index={index} /></td>
-                    {client.slice(1, 7).map((cell) => <td key={cell}>{cell}</td>)}
-                    <td><Badge>{client[7]}</Badge></td>
-                    <td>{client[8]}</td>
-                    <td><RowActions /></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <TableFooter total="248 clients" />
-        </section>
-        <ClientDetail />
-      </section>
-    </>
-  );
-}
-
-function ClientDetail() {
-  return (
-    <aside className="admin-panel detail-card">
-      <h2>DÉTAIL DU CLIENT SÉLECTIONNÉ</h2>
-      <div className="detail-client">
-        <img src="/images/barber-1.webp" alt="" />
-        <div>
-          <strong>Karim Benali</strong>
-          <Badge>VIP</Badge>
-          <small><Phone size={14} /> 06 12 34 56 78</small>
-          <small><Mail size={14} /> karim.benali@gmail.com</small>
-        </div>
-      </div>
-      <DetailList rows={[
-        ["Date d’inscription", "12 Décembre 2023"],
-        ["Dernière visite", "17 Mai 2024"],
-        ["Service favori", "Coupe + Barbe"],
-        ["Barbier favori", "Mohamed"],
-        ["Nombre de rendez-vous", "12"],
-        ["Total dépensé", "1 850 DH"],
-        ["Notes", "Client très régulier, apprécie les coupes modernes."],
-      ]} />
-      <AdminButton icon={Edit3}>Modifier le client</AdminButton>
-      <AdminButton outline icon={Phone}>Appeler</AdminButton>
-      <button className="whatsapp-admin">WhatsApp</button>
-    </aside>
-  );
+  const { state, addItem, editItem, deleteItem } = useAdmin();
+  const { query, setQuery, filtered } = useSearch(state.clients, ["name", "phone", "email", "status", "favoriteService"]);
+  const [selected, setSelectedId] = useSelection(filtered);
+  return <><section className="admin-stats four"><StatCard icon={Users} title="TOTAL CLIENTS" value={state.clients.length} /><StatCard icon={UserPlus} title="NOUVEAUX CE MOIS" value={state.clients.filter((c) => c.status === "Nouveau").length} /><StatCard icon={Star} title="CLIENTS FIDÈLES" value={state.clients.filter((c) => c.status === "VIP").length} /><StatCard icon={RefreshCw} title="TAUX DE RETOUR" value="68%" /></section><Toolbar query={query} setQuery={setQuery} placeholder="Nom, téléphone ou e-mail..." onAdd={() => addItem("clients", { status: "Nouveau", spent: 0, appointments: 0 })} onExport={() => exportCsv("clients.csv", filtered.map(Object.values))} /><section className="admin-split"><section className="admin-panel"><AdminTable heads={["Client", "Téléphone", "E-mail", "Dernière visite", "RDV", "Service favori", "Barbier favori", "Statut", "Dépensé", "Actions"]} rows={filtered.map((c, index) => [<Avatar name={c.name} index={index} />, c.phone, c.email, formatDate(c.lastVisit), c.appointments, c.favoriteService, c.favoriteBarber, <Badge>{c.status}</Badge>, money(c.spent), <RowActions onView={() => setSelectedId(c.id)} onEdit={() => editItem("clients", c)} onDelete={() => deleteItem("clients", c)} />])} rowIds={filtered.map((c) => c.id)} selectedId={selected?.id} onSelect={setSelectedId} /><TableFooter total={`${filtered.length} clients`} /></section><DetailCard title="DÉTAIL DU CLIENT SÉLECTIONNÉ" item={selected} rows={selected && [["Date d’inscription", "12 Décembre 2023"], ["Dernière visite", formatDate(selected.lastVisit)], ["Service favori", selected.favoriteService], ["Barbier favori", selected.favoriteBarber], ["Nombre de rendez-vous", selected.appointments], ["Total dépensé", money(selected.spent)], ["Notes", selected.notes || "—"]]} actions={<><AdminButton icon={Edit3} onClick={() => editItem("clients", selected)}>Modifier le client</AdminButton><AdminButton outline icon={Phone} onClick={() => window.location.href = `tel:${selected.phone}`}>Appeler</AdminButton><button className="whatsapp-admin" onClick={() => window.open(`https://wa.me/${selected.phone.replace(/\D/g, "")}`, "_blank")}>WhatsApp</button></>} /></section></>;
 }
 
 function ServicesPage() {
-  const selected = services[9];
-  return (
-    <>
-      <section className="admin-stats four">
-        <StatCard icon={Scissors} title="TOTAL SERVICES" value={services.length} />
-        <StatCard icon={Check} title="SERVICES ACTIFS" value={services.length} />
-        <StatCard icon={Star} title="SERVICE LE PLUS RÉSERVÉ" value="Dégradé cheveux" />
-        <StatCard icon={Clock} title="DURÉE MOYENNE" value="33 min" />
-      </section>
-      <section className="admin-panel admin-filters services-filter">
-        <label><Search size={17} /><input placeholder="Rechercher un service" /></label>
-        <select aria-label="Statut"><option>Tous les statuts</option></select>
-        <select aria-label="Catégorie"><option>Toutes les catégories</option></select>
-        <select aria-label="Durée"><option>Toutes les durées</option></select>
-        <AdminButton>Ajouter un service</AdminButton>
-        <AdminButton outline icon={Download}>Exporter (CSV)</AdminButton>
-      </section>
-      <section className="admin-split">
-        <section className="admin-panel">
-          <div className="admin-table">
-            <table>
-              <thead>
-                <tr>
-                  {["Service", "Catégorie", "Durée", "Prix", "Réservations ce mois", "Statut", "Dernière modification", "Actions"].map((head) => <th key={head}>{head}</th>)}
-                </tr>
-              </thead>
-              <tbody>
-                {services.map((service, index) => {
-                  const category = serviceCategories.find((item) => item.id === service.category);
-                  return (
-                    <tr className={index === 9 ? "selected" : ""} key={service.id}>
-                      <td><Avatar name={service.name} index={index} service /></td>
-                      <td>{category?.label || service.category}</td>
-                      <td>{service.duration} min</td>
-                      <td>{formatServicePrice(service)}</td>
-                      <td>{[24, 18, 14, 9, 11, 28, 16, 7][index % 8]}</td>
-                      <td><Badge>{index === 15 ? "Populaire" : "Actif"}</Badge></td>
-                      <td>{String(10 - (index % 8)).padStart(2, "0")} Mai 2024</td>
-                      <td><RowActions /></td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          <TableFooter total={`${services.length} services`} />
-        </section>
-        <aside className="admin-panel detail-card service-detail">
-          <h2>DÉTAIL DU SERVICE SÉLECTIONNÉ</h2>
-          <img src={selected.image} alt="" />
-          <h3>{selected.name}</h3>
-          <DetailList rows={[
-            ["Prix", formatServicePrice(selected)],
-            ["Durée", `${selected.duration} min`],
-            ["Catégorie", "SOINS & BEAUTÉ"],
-            ["Réservations ce mois", "32"],
-            ["Popularité", "★★★★★ (4.8)"],
-          ]} />
-          <h2>DESCRIPTION</h2>
-          <p>{selected.description}</p>
-          <AdminButton icon={Edit3}>Modifier le service</AdminButton>
-          <AdminButton outline icon={X}>Désactiver</AdminButton>
-        </aside>
-      </section>
-    </>
-  );
+  const { state, addItem, editItem, deleteItem, mutate } = useAdmin();
+  const { query, setQuery, filtered } = useSearch(state.services, ["name", "categoryLabel", "description"]);
+  const [selected, setSelectedId] = useSelection(filtered);
+  return <><section className="admin-stats four"><StatCard icon={Scissors} title="TOTAL SERVICES" value={state.services.length} /><StatCard icon={Check} title="SERVICES ACTIFS" value={state.services.filter((s) => s.active).length} /><StatCard icon={Star} title="SERVICE LE PLUS RÉSERVÉ" value={(state.services.slice().sort((a,b)=>(b.bookingsThisMonth||0)-(a.bookingsThisMonth||0))[0] || {}).name || "—"} /><StatCard icon={Clock} title="DURÉE MOYENNE" value={`${Math.round(state.services.reduce((sum, s) => sum + Number(s.duration || 0), 0) / Math.max(1, state.services.length))} min`} /></section><Toolbar query={query} setQuery={setQuery} placeholder="Rechercher un service" onAdd={() => addItem("services", { active: true, price_type: "fixed", categoryLabel: serviceCategories[0]?.label })} onExport={() => exportCsv("services.csv", filtered.map(Object.values))} /><section className="admin-split"><section className="admin-panel"><AdminTable heads={["Service", "Catégorie", "Durée", "Prix", "Réservations ce mois", "Statut", "Dernière modification", "Actions"]} rows={filtered.map((s, index) => [<Avatar name={s.name} index={index} service />, s.categoryLabel || s.category, `${s.duration} min`, servicePrice(s), s.bookingsThisMonth || 0, <Badge>{s.active ? "Actif" : "Inactif"}</Badge>, formatDate(s.updatedAt), <RowActions onView={() => setSelectedId(s.id)} onEdit={() => editItem("services", s)} onDelete={() => deleteItem("services", s)} />])} rowIds={filtered.map((s) => s.id)} selectedId={selected?.id} onSelect={setSelectedId} /><TableFooter total={`${filtered.length} services`} /></section><aside className="admin-panel detail-card service-detail"><h2>DÉTAIL DU SERVICE SÉLECTIONNÉ</h2>{selected && <><img src={selected.image || "/images/service-1.webp"} alt="" /><h3>{selected.name}</h3><DetailList rows={[["Prix", servicePrice(selected)], ["Durée", `${selected.duration} min`], ["Catégorie", selected.categoryLabel || selected.category], ["Réservations ce mois", selected.bookingsThisMonth || 0], ["Popularité", "★★★★★ (4.8)"]]} /><h2>DESCRIPTION</h2><p>{selected.description}</p><AdminButton icon={Edit3} onClick={() => editItem("services", selected)}>Modifier le service</AdminButton><AdminButton outline icon={X} onClick={() => mutate("services", "PATCH", { active: !selected.active }, selected.id)}>{selected.active ? "Désactiver" : "Activer"}</AdminButton></>}</aside></section></>;
 }
 
 function HoursPage() {
-  const rows = [
-    ["Lundi", "Ouvert", "09:00", "20:00", "13:00 - 14:00", 20],
-    ["Mardi", "Ouvert", "09:00", "20:00", "13:00 - 14:00", 20],
-    ["Mercredi", "Ouvert", "09:00", "20:00", "13:00 - 14:00", 20],
-    ["Jeudi", "Ouvert", "09:00", "20:00", "13:00 - 14:00", 20],
-    ["Vendredi", "Ouvert", "09:00", "20:00", "13:00 - 14:00", 20],
-    ["Samedi", "Ouvert", "09:00", "21:00", "13:00 - 14:00", 24],
-    ["Dimanche", "Fermé", "—", "—", "—", 0],
-  ];
-  return (
-    <>
-      <section className="admin-stats four">
-        <StatCard icon={Clock} title="HEURES CETTE SEMAINE" value="66h 30" />
-        <StatCard icon={Calendar} title="JOURS OUVERTS" value="6" />
-        <StatCard icon={MessageSquare} title="PAUSES CONFIGURÉES" value="6" />
-        <StatCard icon={Shield} title="EXCEPTIONS CE MOIS" value="2" trend="- 1%" />
-      </section>
-      <Filters search="Rechercher un jour" />
-      <section className="admin-split">
-        <section className="admin-panel">
-          <h2>HORAIRES HEBDOMADAIRES</h2>
-          <div className="admin-table">
-            <table>
-              <thead>
-                <tr>{["Jour", "Statut", "Ouverture", "Fermeture", "Pause", "Créneaux générés", "Dernière modification", "Actions"].map((head) => <th key={head}>{head}</th>)}</tr>
-              </thead>
-              <tbody>
-                {rows.map((row, index) => (
-                  <tr className={index === 5 ? "selected" : ""} key={row[0]}>
-                    <td>{row[0]}</td>
-                    <td><Badge>{row[1]}</Badge></td>
-                    <td>{row[2]}</td>
-                    <td>{row[3]}</td>
-                    <td>{row[4]}</td>
-                    <td>{row[5]}</td>
-                    <td>10 Mai 2024 · 14:32</td>
-                    <td><RowActions /></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <TableFooter total="7 jours" />
-        </section>
-        <aside className="admin-panel detail-card">
-          <h2>DÉTAIL DU JOUR SÉLECTIONNÉ</h2>
-          <h3>Samedi</h3>
-          <DetailList rows={[
-            ["Ouverture", "09:00"],
-            ["Fermeture", "21:00"],
-            ["Pause", "13:00 - 14:00"],
-            ["Durée totale d’ouverture", "11 h 00"],
-            ["Créneaux", "24"],
-            ["Capacité estimée", "48 clients"],
-          ]} />
-          <AdminButton icon={Edit3}>Modifier les horaires</AdminButton>
-          <AdminButton outline icon={Lock}>Bloquer un créneau</AdminButton>
-        </aside>
-      </section>
-      <section className="admin-bottom-grid">
-        <Donut title="RÉPARTITION DES HEURES" center="66h 30" />
-        <WeeklyChart />
-        <SlotsPanel />
-      </section>
-    </>
-  );
+  const { state, editItem, mutate } = useAdmin();
+  const [selected, setSelectedId] = useSelection(state.hours);
+  return <><section className="admin-stats four"><StatCard icon={Clock} title="HEURES CETTE SEMAINE" value="66h 30" /><StatCard icon={Calendar} title="JOURS OUVERTS" value={state.hours.filter((h) => h.status === "Ouvert").length} /><StatCard icon={MessageSquare} title="PAUSES CONFIGURÉES" value={state.hours.filter((h) => h.pause).length} /><StatCard icon={Shield} title="EXCEPTIONS CE MOIS" value={state.closedDays.length} trend="- 1%" /></section><Toolbar placeholder="Rechercher un jour" onAdd={() => editItem("hours", selected)} onExport={() => exportCsv("horaires.csv", state.hours.map(Object.values))} /><section className="admin-split"><section className="admin-panel"><h2>HORAIRES HEBDOMADAIRES</h2><AdminTable heads={["Jour", "Statut", "Ouverture", "Fermeture", "Pause", "Créneaux générés", "Dernière modification", "Actions"]} rows={state.hours.map((h) => [h.day, <Badge>{h.status}</Badge>, h.open || "—", h.close || "—", h.pause || "—", h.slots, formatDate(h.updatedAt), <RowActions onView={() => setSelectedId(h.id)} onEdit={() => editItem("hours", h)} />])} rowIds={state.hours.map((h) => h.id)} selectedId={selected?.id} onSelect={setSelectedId} /><TableFooter total="7 jours" /></section><DetailCard title="DÉTAIL DU JOUR SÉLECTIONNÉ" item={selected} rows={selected && [["Ouverture", selected.open || "—"], ["Fermeture", selected.close || "—"], ["Pause", selected.pause || "—"], ["Créneaux", selected.slots], ["Statut", selected.status]]} actions={<><AdminButton icon={Edit3} onClick={() => editItem("hours", selected)}>Modifier les horaires</AdminButton><AdminButton outline icon={Lock} onClick={() => mutate("hours", "PATCH", { status: selected.status === "Ouvert" ? "Fermé" : "Ouvert" }, selected.id)}>{selected?.status === "Ouvert" ? "Fermer ce jour" : "Ouvrir ce jour"}</AdminButton></>} /></section><section className="admin-bottom-grid"><Donut title="RÉPARTITION DES HEURES" center="66h 30" /><WeeklyChart /><SlotsPanel /></section></>;
 }
 
 function ClosedDaysPage() {
-  return (
-    <>
-      <section className="admin-stats four">
-        <StatCard icon={Calendar} title="JOURS FERMÉS CE MOIS" value="5" trend="- 17%" />
-        <StatCard icon={Shield} title="EXCEPTIONS PLANIFIÉES" value="8" />
-        <StatCard icon={RefreshCw} title="JOURS RÉCURRENTS FERMÉS" value="1" />
-        <StatCard icon={Users} title="RENDEZ-VOUS IMPACTÉS" value="42" trend="- 9%" />
-      </section>
-      <section className="admin-panel admin-filters">
-        <label><Search size={17} /><input placeholder="Rechercher une date ou une raison" /></label>
-        <select aria-label="Type de fermeture"><option>Type de fermeture</option></select>
-        <select aria-label="Statut"><option>Statut</option></select>
-        <AdminButton>Ajouter un jour fermé</AdminButton>
-        <AdminButton danger icon={Lock}>Bloquer une période</AdminButton>
-        <AdminButton outline icon={Download}>Exporter (CSV)</AdminButton>
-      </section>
-      <section className="admin-split">
-        <section className="admin-panel">
-          <h2>LISTE DES JOURS FERMÉS</h2>
-          <div className="admin-table">
-            <table>
-              <thead><tr>{["Date", "Jour", "Type", "Raison", "Durée", "Rendez-vous impactés", "Statut", "Dernière modification", "Actions"].map((head) => <th key={head}>{head}</th>)}</tr></thead>
-              <tbody>
-                {closedDays.map((row, index) => (
-                  <tr className={index === 0 ? "selected" : ""} key={row[0]}>
-                    {row.map((cell, cellIndex) => <td key={cell}>{[2, 6].includes(cellIndex) ? <Badge>{cell}</Badge> : cell}</td>)}
-                    <td>08 Mai 2024 · 14:22</td>
-                    <td><RowActions /></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <TableFooter total="9 jours" />
-        </section>
-        <aside className="admin-panel detail-card">
-          <h2>DÉTAIL DU JOUR FERMÉ SÉLECTIONNÉ</h2>
-          <h3>Aïd al-Adha</h3>
-          <DetailList rows={[
-            ["Date", "Dimanche 16 Juin 2024"],
-            ["Type", "Férié"],
-            ["Raison", "Aïd al-Adha"],
-            ["Heure / Durée", "Toute la journée"],
-            ["Impact", "18 rendez-vous impactés"],
-            ["Notification clients", "Envoyée le 08 Mai 2024 à 14:25"],
-          ]} />
-          <AdminButton icon={Edit3}>Modifier la fermeture</AdminButton>
-          <AdminButton outline icon={Mail}>Notifier les clients</AdminButton>
-          <AdminButton danger outline icon={Trash2}>Supprimer</AdminButton>
-        </aside>
-      </section>
-    </>
-  );
+  const { state, addItem, editItem, deleteItem, mutate } = useAdmin();
+  const { query, setQuery, filtered } = useSearch(state.closedDays, ["date", "type", "reason", "status"]);
+  const [selected, setSelectedId] = useSelection(filtered);
+  return <><section className="admin-stats four"><StatCard icon={Calendar} title="JOURS FERMÉS CE MOIS" value={state.closedDays.length} trend="- 17%" /><StatCard icon={Shield} title="EXCEPTIONS PLANIFIÉES" value={state.closedDays.filter((d) => d.status === "Planifié").length} /><StatCard icon={RefreshCw} title="JOURS RÉCURRENTS FERMÉS" value="1" /><StatCard icon={Users} title="RENDEZ-VOUS IMPACTÉS" value={state.closedDays.reduce((sum, d) => sum + Number(d.impacted || 0), 0)} trend="- 9%" /></section><Toolbar query={query} setQuery={setQuery} placeholder="Rechercher une date ou une raison" onAdd={() => addItem("closedDays", { status: "Planifié", duration: "Toute la journée" })} onExport={() => exportCsv("jours-fermes.csv", filtered.map(Object.values))} /><section className="admin-split"><section className="admin-panel"><h2>LISTE DES JOURS FERMÉS</h2><AdminTable heads={["Date", "Type", "Raison", "Durée", "Impact", "Statut", "Dernière modification", "Actions"]} rows={filtered.map((d) => [formatDate(d.date), <Badge>{d.type}</Badge>, d.reason, d.duration, d.impacted, <Badge>{d.status}</Badge>, formatDate(d.updatedAt), <RowActions onView={() => setSelectedId(d.id)} onEdit={() => editItem("closedDays", d)} onDelete={() => deleteItem("closedDays", d)} />])} rowIds={filtered.map((d) => d.id)} selectedId={selected?.id} onSelect={setSelectedId} /><TableFooter total={`${filtered.length} jours`} /></section><DetailCard title="DÉTAIL DU JOUR FERMÉ SÉLECTIONNÉ" item={selected} rows={selected && [["Date", formatDate(selected.date)], ["Type", selected.type], ["Raison", selected.reason], ["Heure / Durée", selected.duration], ["Impact", `${selected.impacted} rendez-vous impactés`], ["Notification clients", "Prête à envoyer"]]} actions={<><AdminButton icon={Edit3} onClick={() => editItem("closedDays", selected)}>Modifier la fermeture</AdminButton><AdminButton outline icon={Mail} onClick={() => mutate("closedDays", "PATCH", { notifiedAt: new Date().toISOString() }, selected.id)}>Notifier les clients</AdminButton><AdminButton danger outline icon={Trash2} onClick={() => deleteItem("closedDays", selected)}>Supprimer</AdminButton></>} /></section></>;
 }
 
-function GalleryPage() {
-  const categories = ["Toutes", "Coupes", "Barbe", "Avant / Après", "Salon", "Équipe"];
-  return (
-    <>
-      <section className="admin-page-head">
-        <div><Image /><span><h2>Galerie</h2><p>Gérez les photos de votre galerie</p></span></div>
-        <div><AdminButton outline icon={Filter}>Trier</AdminButton><AdminButton>Ajouter des photos</AdminButton></div>
-      </section>
-      <div className="gallery-tabs">{categories.map((item, index) => <button className={index === 0 ? "active" : ""} key={item}>{item}</button>)}</div>
-      <section className="admin-gallery-grid">
-        {Array.from({ length: 12 }, (_, index) => (
-          <article className="admin-gallery-card" key={index}>
-            <img src={`/images/gallery-${(index % 9) + 1}.webp`} alt="" />
-            <span>{categories[(index % 5) + 1]}</span>
-            <footer>
-              <time>{16 - index} Mai 2024</time>
-              <div><button><Edit3 size={15} /></button><button><Trash2 size={15} /></button></div>
-            </footer>
-          </article>
-        ))}
-      </section>
-      <Pagination />
-    </>
-  );
-}
+function CalendarPage() { const { state } = useAdmin(); return <><section className="admin-stats four"><StatCard icon={Calendar} title="AUJOURD’HUI" value={state.appointments.length} /><StatCard icon={Users} title="CETTE SEMAINE" value={state.appointments.length + 77} /><StatCard icon={Check} title="CRÉNEAUX RÉSERVÉS" value={state.appointments.length * 12} /><StatCard icon={Clock} title="CRÉNEAUX DISPONIBLES" value="128" /></section><section className="calendar-admin-grid"><MonthCalendar appointments={state.appointments} /><DayAppointments appointments={state.appointments} /></section></>; }
+function MonthCalendar({ appointments }) { const days = Array.from({ length: 35 }, (_, i) => i + 1); return <section className="admin-panel month-panel"><div className="admin-panel-head"><div><button><ChevronLeft size={17} /></button><button><ChevronRight size={17} /></button></div><h2>Mai 2024</h2><div className="segmented"><button>Jour</button><button>Semaine</button><button className="active">Mois</button></div></div><div className="month-grid">{["LUN", "MAR", "MER", "JEU", "VEN", "SAM", "DIM"].map((d) => <b key={d}>{d}</b>)}{days.map((day) => { const count = appointments.filter((a) => Number(a.date?.slice(-2)) === day).length; return <article className={day === 18 ? "selected" : day % 7 === 5 ? "blocked" : ""} key={day}><strong>{day <= 31 ? day : day - 31}</strong>{count > 0 && <small><i /> {count}</small>}{count > 0 && <span>{appointments.find((a) => Number(a.date?.slice(-2)) === day)?.time} RDV</span>}{day % 7 === 5 && <em>Fermé</em>}</article>; })}</div><Legend items={["Confirmé / Disponible", "En attente", "Annulé / Bloqué", "Fermé / Passé"]} /></section>; }
+function DayAppointments({ appointments }) { return <aside className="admin-panel day-panel"><h2>RENDEZ-VOUS DU 18 MAI 2024</h2>{appointments.slice(0, 4).map((a, i) => <article key={a.id}><b>{a.time}</b><Avatar name={a.client} index={i} /><span>{a.service}<small>{a.barber}</small></span><Badge>{a.status}</Badge><MoreVertical size={18} /></article>)}<div className="mini-stats"><span>Rendez-vous <b>{appointments.length}</b></span><span>Confirmés <b>{appointments.filter((a) => a.status === "Confirmé").length}</b></span><span>En attente <b>{appointments.filter((a) => a.status === "En attente").length}</b></span><span>Annulés <b>{appointments.filter((a) => a.status === "Annulé").length}</b></span></div><QuickList /></aside>; }
 
-function ReviewsPage() {
-  return (
-    <>
-      <section className="admin-page-head">
-        <div><span><h2>Témoignages</h2><p>Découvrez ce que nos clients disent de nous.</p></span></div>
-        <AdminButton>Ajouter un témoignage</AdminButton>
-      </section>
-      <section className="admin-stats four">
-        <StatCard icon={MessageSquare} title="TOTAL TÉMOIGNAGES" value="26" />
-        <StatCard icon={Star} title="NOTE MOYENNE" value="4.9 / 5" />
-        <StatCard icon={Check} title="APPROUVÉS" value="24" />
-        <StatCard icon={Eye} title="EN ATTENTE" value="2" />
-      </section>
-      <section className="review-grid-admin">
-        {reviews.map((review, index) => (
-          <article className="admin-panel review-admin-card" key={review[0]}>
-            <header>
-              <Avatar name={review[0]} index={index} />
-              <Badge>{review[2]}</Badge>
-            </header>
-            <div className="stars">★★★★★ <small>{review[4]}</small></div>
-            <p>{review[1]}</p>
-            <b>”</b>
-          </article>
-        ))}
-      </section>
-      <Pagination />
-    </>
-  );
-}
+function GalleryPage() { const { state, addItem, editItem, deleteItem } = useAdmin(); const [category, setCategory] = useState("Toutes"); const categories = ["Toutes", "Coupes", "Barbe", "Avant / Après", "Salon", "Équipe"]; const items = state.gallery.filter((g) => category === "Toutes" || g.category === category); return <><section className="admin-page-head"><div><Image /><span><h2>Galerie</h2><p>Gérez les photos de votre galerie</p></span></div><div><AdminButton outline icon={Filter}>Trier</AdminButton><AdminButton onClick={() => addItem("gallery", { category: "Coupes", image: "/images/gallery-1.webp" })}>Ajouter des photos</AdminButton></div></section><div className="gallery-tabs">{categories.map((item) => <button className={item === category ? "active" : ""} key={item} onClick={() => setCategory(item)}>{item}</button>)}</div><section className="admin-gallery-grid">{items.map((item) => <article className="admin-gallery-card" key={item.id}><img src={item.image} alt="" /><span>{item.category}</span><footer><time>{formatDate(item.date)}</time><div><button onClick={() => editItem("gallery", item)}><Edit3 size={15} /></button><button onClick={() => deleteItem("gallery", item)}><Trash2 size={15} /></button></div></footer></article>)}</section><Pagination /></>; }
+function ReviewsPage() { const { state, addItem, editItem, deleteItem, mutate } = useAdmin(); return <><section className="admin-page-head"><div><span><h2>Témoignages</h2><p>Découvrez ce que nos clients disent de nous.</p></span></div><AdminButton onClick={() => addItem("reviews", { status: "En attente", rating: 5, date: new Date().toISOString().slice(0, 10) })}>Ajouter un témoignage</AdminButton></section><section className="admin-stats four"><StatCard icon={MessageSquare} title="TOTAL TÉMOIGNAGES" value={state.reviews.length} /><StatCard icon={Star} title="NOTE MOYENNE" value={`${(state.reviews.reduce((s, r) => s + Number(r.rating || 0), 0) / Math.max(1, state.reviews.length)).toFixed(1)} / 5`} /><StatCard icon={Check} title="APPROUVÉS" value={state.reviews.filter((r) => r.status === "Approuvé").length} /><StatCard icon={Eye} title="EN ATTENTE" value={state.reviews.filter((r) => r.status === "En attente").length} /></section><section className="review-grid-admin">{state.reviews.map((review, index) => <article className="admin-panel review-admin-card" key={review.id}><header><Avatar name={review.client} index={index} /><Badge>{review.status}</Badge></header><div className="stars">{"★".repeat(Number(review.rating || 0))}{"☆".repeat(5 - Number(review.rating || 0))} <small>{formatDate(review.date)}</small></div><p>{review.text}</p><div className="review-actions"><button onClick={() => mutate("reviews", "PATCH", { status: review.status === "Approuvé" ? "En attente" : "Approuvé" }, review.id)}><Check size={15} /></button><button onClick={() => editItem("reviews", review)}><Edit3 size={15} /></button><button onClick={() => deleteItem("reviews", review)}><Trash2 size={15} /></button></div><b>”</b></article>)}</section><Pagination /></>; }
 
-function SettingsPage() {
-  return (
-    <>
-      <section className="admin-page-head">
-        <div><Settings /><span><h2>Paramètres</h2><p>Gérez les paramètres généraux de votre établissement.</p></span></div>
-        <AdminButton icon={Check}>Enregistrer les modifications</AdminButton>
-      </section>
-      <section className="settings-grid">
-        <PanelTitle title="Profil de l’entreprise" subtitle="Informations générales de votre établissement.">
-          <div className="company-profile">
-            <img src="/images/logo.webp" alt="" />
-            <div className="settings-form">
-              <label>Nom de l’établissement<input defaultValue="Er Rammach Barber Shop" /></label>
-              <label>Téléphone<input defaultValue={business.internationalPhone.replace("+212", "+212 ")} /></label>
-              <label>Email<input defaultValue="contact@errammach.ma" /></label>
-              <label>Adresse<input defaultValue="123, Avenue Mohammed V, Meknès, Maroc" /></label>
-            </div>
-          </div>
-        </PanelTitle>
-        <PanelTitle title="Préférences générales" subtitle="Configurez les préférences générales de l’application.">
-          <SettingsRows rows={["Langue", "Fuseau horaire", "Devise", "Format de date", "Format de l’heure", "Première heure de la journée"]} />
-        </PanelTitle>
-        <PanelTitle title="Notifications" subtitle="Gérez vos préférences de notifications.">
-          <ToggleRows rows={["Nouveaux rendez-vous", "Rappels de rendez-vous", "Annulations", "Promotions et offres"]} />
-        </PanelTitle>
-        <PanelTitle title="Sécurité" subtitle="Gérez vos paramètres de sécurité et de compte.">
-          <SettingsRows rows={["Mot de passe", "Authentification à deux facteurs", "Sessions actives"]} button />
-        </PanelTitle>
-        <PanelTitle title="Sauvegarde et données" subtitle="Gérez vos données et sauvegardes.">
-          <SettingsRows rows={["Sauvegarde automatique", "Exporter les données", "Supprimer le cache"]} button />
-        </PanelTitle>
-        <PanelTitle title="Personnalisation" subtitle="Personnalisez l’apparence de votre espace de travail.">
-          <div className="swatches">{["#d8a33b", "#d84a4a", "#8f4fd4", "#3f6bd6", "#3ea45a", "#22b8bd"].map((color) => <button style={{ background: color }} key={color} />)}</div>
-        </PanelTitle>
-      </section>
-    </>
-  );
-}
+function SettingsPage() { const { state, patchSettings } = useAdmin(); const [business, setBusiness] = useState(state.business); const [notifications, setNotifications] = useState(state.notifications); useEffect(() => { setBusiness(state.business); setNotifications(state.notifications); }, [state.business, state.notifications]); return <><section className="admin-page-head"><div><Settings /><span><h2>Paramètres</h2><p>Gérez les paramètres généraux de votre établissement.</p></span></div><AdminButton icon={Check} onClick={async () => { await patchSettings("business", business); await patchSettings("notifications", notifications); }}>Enregistrer les modifications</AdminButton></section><section className="settings-grid"><PanelTitle title="Profil de l’entreprise" subtitle="Informations générales de votre établissement."><div className="company-profile"><img src="/images/logo.webp" alt="" /><div className="settings-form"><Input label="Nom de l’établissement" value={business.name} onChange={(name) => setBusiness((p) => ({ ...p, name }))} /><Input label="Téléphone" value={business.phone} onChange={(phone) => setBusiness((p) => ({ ...p, phone }))} /><Input label="Email" value={business.email} onChange={(email) => setBusiness((p) => ({ ...p, email }))} /><Input label="Adresse" value={business.address} onChange={(address) => setBusiness((p) => ({ ...p, address }))} /></div></div></PanelTitle><PanelTitle title="Préférences générales" subtitle="Configurez les préférences générales de l’application."><SettingsRows rows={[["Langue", business.language], ["Fuseau horaire", business.timezone], ["Devise", business.currency], ["Première heure de la journée", business.dayStart]]} /></PanelTitle><PanelTitle title="Notifications" subtitle="Gérez vos préférences de notifications."><ToggleRows values={notifications} setValues={setNotifications} /></PanelTitle><PanelTitle title="Sécurité" subtitle="Gérez vos paramètres de sécurité et de compte."><SettingsRows rows={[["Mot de passe", "Modifier"], ["Authentification à deux facteurs", "Configurer"], ["Sessions actives", "Voir"]]} button /></PanelTitle><PanelTitle title="Sauvegarde et données" subtitle="Gérez vos données et sauvegardes."><SettingsRows rows={[["Sauvegarde automatique", "Sauvegarder"], ["Exporter les données", "Exporter"], ["Supprimer le cache", "Vider"]]} button /></PanelTitle><PanelTitle title="Personnalisation" subtitle="Personnalisez l’apparence de votre espace de travail."><div className="swatches">{["#d8a33b", "#d84a4a", "#8f4fd4", "#3f6bd6", "#3ea45a", "#22b8bd"].map((color) => <button style={{ background: color }} key={color} />)}</div></PanelTitle></section></>; }
+function ProfilePage() { const { state, patchSettings } = useAdmin(); const [profile, setProfile] = useState(state.profile); useEffect(() => setProfile(state.profile), [state.profile]); return <><section className="admin-page-title"><h2>Mon Profil</h2><p><NavLink to="/admin/dashboard">Dashboard</NavLink> <ChevronRight size={14} /> Mon Profil</p></section><section className="profile-grid"><aside className="admin-panel profile-card"><img src={profile.image || "/images/barber-1.webp"} alt="" /><button><Camera size={16} /></button><h2>{profile.name}</h2><strong>{profile.role}</strong><DetailList rows={[["Email", profile.email], ["Téléphone", profile.phone], ["Date", formatDate(profile.birthDate)], ["Adresse", profile.address], ["Rôle", profile.role]]} /><AdminButton outline icon={Edit3} onClick={() => patchSettings("profile", profile)}>Enregistrer le profil</AdminButton></aside><PanelTitle title="Informations personnelles"><div className="settings-form two">{["name", "username", "email", "role", "phone", "birthDate", "address"].map((key) => <Input key={key} label={nameLabels[key] || key} value={profile[key]} type={key === "birthDate" ? "date" : "text"} onChange={(value) => setProfile((p) => ({ ...p, [key]: value }))} />)}</div></PanelTitle><PanelTitle title="Changer le mot de passe"><div className="settings-form"><label>Mot de passe actuel<input placeholder="Entrez votre mot de passe actuel" type="password" /></label><label>Nouveau mot de passe<input placeholder="Entrez votre nouveau mot de passe" type="password" /></label><label>Confirmer le nouveau mot de passe<input placeholder="Confirmez votre nouveau mot de passe" type="password" /></label></div><AdminButton icon={Lock} onClick={() => alert("Mot de passe validé côté interface. À connecter au provider auth en production.")}>Mettre à jour le mot de passe</AdminButton></PanelTitle><PanelTitle title="Sessions actives" subtitle="Gérez vos sessions actives sur les autres appareils."><div className="session-row"><span><Grid2X2 /> MacBook Pro · macOS<small>Casablanca, Maroc · session actuelle</small></span><Badge>Session actuelle</Badge></div><AdminButton danger outline icon={LogOut}>Se déconnecter</AdminButton></PanelTitle></section></>; }
 
-function ProfilePage() {
-  return (
-    <>
-      <section className="admin-page-title">
-        <h2>Mon Profil</h2>
-        <p><NavLink to="/admin/dashboard">Dashboard</NavLink> <ChevronRight size={14} /> Mon Profil</p>
-      </section>
-      <section className="profile-grid">
-        <aside className="admin-panel profile-card">
-          <img src="/images/barber-1.webp" alt="" />
-          <button><Camera size={16} /></button>
-          <h2>Mohamed Er rammach</h2>
-          <strong>Administrateur</strong>
-          <DetailList rows={[
-            ["Email", "mohamed.errammach@gmail.com"],
-            ["Téléphone", "+212 6 12 34 56 78"],
-            ["Date", "15 Mai 1995"],
-            ["Adresse", "Casablanca, Maroc"],
-            ["Rôle", "Administrateur"],
-          ]} />
-          <AdminButton outline icon={Edit3}>Changer la photo</AdminButton>
-        </aside>
-        <PanelTitle title="Informations personnelles">
-          <div className="settings-form two">
-            {["Nom complet", "Nom d’utilisateur", "Email", "Rôle", "Téléphone", "Langue", "Date de naissance", "Fuseau horaire", "Adresse"].map((label, index) => (
-              <label key={label}>{label}<input defaultValue={["Mohamed Er rammach", "er_rammach", "mohamed.errammach@gmail.com", "Administrateur", "+212 6 12 34 56 78", "Français", "15/05/1995", "(GMT+01:00) Casablanca", "Casablanca, Maroc"][index]} /></label>
-            ))}
-          </div>
-        </PanelTitle>
-        <PanelTitle title="Changer le mot de passe">
-          <div className="settings-form">
-            <label>Mot de passe actuel<input placeholder="Entrez votre mot de passe actuel" type="password" /></label>
-            <label>Nouveau mot de passe<input placeholder="Entrez votre nouveau mot de passe" type="password" /></label>
-            <label>Confirmer le nouveau mot de passe<input placeholder="Confirmez votre nouveau mot de passe" type="password" /></label>
-          </div>
-          <AdminButton icon={Lock}>Mettre à jour le mot de passe</AdminButton>
-        </PanelTitle>
-        <PanelTitle title="Sessions actives" subtitle="Gérez vos sessions actives sur les autres appareils.">
-          <div className="session-row"><span><Grid2X2 /> MacBook Pro · macOS<small>Casablanca, Maroc · 192.168.1.15</small></span><Badge>Session actuelle</Badge></div>
-          <AdminButton danger outline icon={LogOut}>Se déconnecter de toutes les autres sessions</AdminButton>
-        </PanelTitle>
-      </section>
-    </>
-  );
-}
-
-function PanelTitle({ title, subtitle, children }) {
-  return (
-    <section className="admin-panel settings-panel">
-      <h2>{title}</h2>
-      {subtitle && <p>{subtitle}</p>}
-      {children}
-    </section>
-  );
-}
-
-function SettingsRows({ rows, button = false }) {
-  return (
-    <div className="settings-rows">
-      {rows.map((row) => (
-        <div key={row}>
-          <span><Settings size={18} /> {row}</span>
-          {button ? <button>Voir</button> : <select aria-label={row}><option>Français</option></select>}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function ToggleRows({ rows }) {
-  return (
-    <div className="toggle-rows">
-      {rows.map((row, index) => (
-        <label key={row}>
-          <span>{row}<small>Recevoir des notifications pour {row.toLowerCase()}</small></span>
-          <input type="checkbox" defaultChecked={index < 3} />
-        </label>
-      ))}
-    </div>
-  );
-}
-
-function QuickList() {
-  return (
-    <div className="quick-list">
-      <h2>ACTIONS RAPIDES</h2>
-      {["Ajouter un rendez-vous pour le 18 mai", "Copier les rendez-vous de cette journée", "Bloquer cette date", "Exporter la journée (CSV)"].map((item) => (
-        <button key={item}><Plus size={15} /> {item}</button>
-      ))}
-    </div>
-  );
-}
-
-function Donut({ title, center }) {
-  return (
-    <section className="admin-panel donut-panel">
-      <h2>{title}</h2>
-      <div className="donut"><span>{center}</span></div>
-    </section>
-  );
-}
-
-function Avatar({ name, index = 0, small = false, service = false }) {
-  return (
-    <span className={`avatar-name ${small ? "small" : ""}`}>
-      <img src={service ? `/images/service-${(index % 11) + 1}.webp` : `/images/barber-${(index % 3) + 1}.webp`} alt="" />
-      {name}
-    </span>
-  );
-}
-
-function RowActions() {
-  return (
-    <span className="row-actions">
-      <button><Eye size={15} /></button>
-      <button><Edit3 size={15} /></button>
-      <button><MoreVertical size={15} /></button>
-    </span>
-  );
-}
-
-function TableFooter({ total }) {
-  return (
-    <footer className="table-footer">
-      <span>Affichage 1 à 12 sur {total}</span>
-      <Pagination small />
-      <label>Lignes par page<select aria-label="Lignes par page"><option>12</option><option>25</option></select></label>
-    </footer>
-  );
-}
-
-function Pagination({ small = false }) {
-  return (
-    <div className={`admin-pagination ${small ? "small" : ""}`}>
-      <button><ChevronLeft size={16} /></button>
-      <button className="active">1</button>
-      <button>2</button>
-      <button>3</button>
-      {!small && <button>4</button>}
-      <button><ChevronRight size={16} /></button>
-    </div>
-  );
-}
-
-function DetailList({ rows }) {
-  return (
-    <dl className="detail-list">
-      {rows.map(([term, value]) => (
-        <div key={term}>
-          <dt>{term}</dt>
-          <dd>{value}</dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
+function Toolbar({ query = "", setQuery = () => {}, placeholder, onAdd, onExport }) { return <section className="admin-panel admin-filters"><label><Search size={17} /><input placeholder={placeholder} value={query} onChange={(e) => setQuery(e.target.value)} /></label><select><option>Tous les statuts</option></select><select><option>Tous les barbiers</option></select><select><option>Tous les services</option></select><AdminButton outline icon={RefreshCw} onClick={() => setQuery("")}>Réinitialiser</AdminButton>{onAdd && <AdminButton onClick={onAdd}>Ajouter</AdminButton>}{onExport && <AdminButton outline icon={Download} onClick={onExport}>Exporter CSV</AdminButton>}</section>; }
+function AdminTable({ heads, rows, rowIds = [], selectedId, onSelect }) { return <div className="admin-table"><table><thead><tr>{heads.map((head) => <th key={head}>{head}</th>)}</tr></thead><tbody>{rows.map((row, index) => <tr className={rowIds[index] === selectedId ? "selected" : ""} key={rowIds[index] || index} onClick={() => onSelect?.(rowIds[index])}>{row.map((cell, cellIndex) => <td key={cellIndex}>{cell}</td>)}</tr>)}</tbody></table></div>; }
+function RowActions({ onView, onEdit, onDelete }) { return <span className="row-actions" onClick={(event) => event.stopPropagation()}><button onClick={onView}><Eye size={15} /></button><button onClick={onEdit}><Edit3 size={15} /></button>{onDelete ? <button onClick={onDelete}><Trash2 size={15} /></button> : <button><MoreVertical size={15} /></button>}</span>; }
+function DetailCard({ title, item, rows, actions }) { return <aside className="admin-panel detail-card"><h2>{title}</h2>{item ? <><div className="detail-client"><img src={item.image || "/images/barber-1.webp"} alt="" /><div><strong>{item.name || item.client || item.reason}</strong>{item.status && <Badge>{item.status}</Badge>}{item.phone && <small><Phone size={14} /> {item.phone}</small>}{item.email && <small><Mail size={14} /> {item.email}</small>}</div></div><DetailList rows={rows || []} />{actions}</> : <p>Aucun élément sélectionné.</p>}</aside>; }
+function Avatar({ name, index = 0, small = false, service = false }) { return <span className={`avatar-name ${small ? "small" : ""}`}><img src={service ? `/images/service-${(index % 11) + 1}.webp` : `/images/barber-${(index % 3) + 1}.webp`} alt="" />{name}</span>; }
+function TableFooter({ total }) { return <footer className="table-footer"><span>Affichage de {total}</span><Pagination small /><label>Lignes par page<select><option>12</option><option>25</option></select></label></footer>; }
+function Pagination({ small = false }) { return <div className={`admin-pagination ${small ? "small" : ""}`}><button><ChevronLeft size={16} /></button><button className="active">1</button><button>2</button><button>3</button>{!small && <button>4</button>}<button><ChevronRight size={16} /></button></div>; }
+function DetailList({ rows }) { return <dl className="detail-list">{rows.map(([term, value]) => <div key={term}><dt>{term}</dt><dd>{value}</dd></div>)}</dl>; }
+function PanelTitle({ title, subtitle, children }) { return <section className="admin-panel settings-panel"><h2>{title}</h2>{subtitle && <p>{subtitle}</p>}{children}</section>; }
+function Input({ label, value = "", onChange, type = "text" }) { return <label>{label}<input type={type} value={value || ""} onChange={(event) => onChange(event.target.value)} /></label>; }
+function SettingsRows({ rows, button = false }) { return <div className="settings-rows">{rows.map(([row, value]) => <div key={row}><span><Settings size={18} /> {row}</span>{button ? <button>{value}</button> : <select value={value || ""} onChange={() => {}}><option>{value}</option></select>}</div>)}</div>; }
+function ToggleRows({ values, setValues }) { const rows = [["newAppointments", "Nouveaux rendez-vous"], ["reminders", "Rappels de rendez-vous"], ["cancellations", "Annulations"], ["promotions", "Promotions et offres"]]; return <div className="toggle-rows">{rows.map(([key, label]) => <label key={key}><span>{label}<small>Recevoir des notifications pour {label.toLowerCase()}</small></span><input type="checkbox" checked={Boolean(values[key])} onChange={(event) => setValues((prev) => ({ ...prev, [key]: event.target.checked }))} /></label>)}</div>; }
+function QuickList() { return <div className="quick-list"><h2>ACTIONS RAPIDES</h2>{["Ajouter un rendez-vous pour le 18 mai", "Copier les rendez-vous de cette journée", "Bloquer cette date", "Exporter la journée (CSV)"].map((item) => <button key={item}><Plus size={15} /> {item}</button>)}</div>; }
+function Donut({ title, center }) { return <section className="admin-panel donut-panel"><h2>{title}</h2><div className="donut"><span>{center}</span></div></section>; }
 
 export default function Admin() {
-  return (
-    <AdminLayout>
-      <Routes>
-        <Route index element={<Navigate to="dashboard" replace />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="rendez-vous" element={<AppointmentsPage />} />
-        <Route path="calendrier" element={<CalendarPage />} />
-        <Route path="clients" element={<ClientsPage />} />
-        <Route path="services" element={<ServicesPage />} />
-        <Route path="horaires" element={<HoursPage />} />
-        <Route path="jours-fermes" element={<ClosedDaysPage />} />
-        <Route path="galerie" element={<GalleryPage />} />
-        <Route path="temoignages" element={<ReviewsPage />} />
-        <Route path="parametres" element={<SettingsPage />} />
-        <Route path="profile" element={<ProfilePage />} />
-        <Route path="*" element={<Navigate to="dashboard" replace />} />
-      </Routes>
-    </AdminLayout>
-  );
+  return <AdminProvider><AdminLayout><Routes><Route index element={<Navigate to="dashboard" replace />} /><Route path="dashboard" element={<Dashboard />} /><Route path="rendez-vous" element={<AppointmentsPage />} /><Route path="calendrier" element={<CalendarPage />} /><Route path="clients" element={<ClientsPage />} /><Route path="services" element={<ServicesPage />} /><Route path="horaires" element={<HoursPage />} /><Route path="jours-fermes" element={<ClosedDaysPage />} /><Route path="galerie" element={<GalleryPage />} /><Route path="temoignages" element={<ReviewsPage />} /><Route path="parametres" element={<SettingsPage />} /><Route path="profile" element={<ProfilePage />} /><Route path="*" element={<Navigate to="dashboard" replace />} /></Routes></AdminLayout></AdminProvider>;
 }
