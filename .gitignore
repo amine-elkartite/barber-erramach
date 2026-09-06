@@ -1,0 +1,8 @@
+node_modules/
+client/dist/
+.env
+.env.*
+!.env.example
+.DS_Store
+test-results/
+playwright-report/

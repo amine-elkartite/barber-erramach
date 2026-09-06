@@ -1,0 +1,1392 @@
+@media (min-width: 1700px) {
+  .home-hero {
+    min-height: 555px;
+  }
+  .home-copy {
+    padding-top: 65px;
+  }
+  .home-copy h1 {
+    font-size: 85px;
+  }
+  .hero-inner {
+    padding-block: 30px;
+  }
+  .service-card img {
+    aspect-ratio: 2;
+  }
+  .gallery-grid {
+    grid-auto-rows: 177px;
+  }
+}
+@media (max-width: 1400px) {
+  .header-inner {
+    gap: 16px;
+    width: calc(100% - 40px);
+  }
+  .main-nav {
+    gap: 20px;
+  }
+  .main-nav a {
+    font-size: 11px;
+  }
+  .header-contact {
+    gap: 12px;
+  }
+  .header-contact a {
+    font-size: 11px;
+  }
+  .logo img {
+    width: 185px;
+  }
+  .header-book {
+    font-size: 10px;
+  }
+  .home-copy {
+    max-width: 430px;
+  }
+  .home-copy h1 {
+    font-size: 69px;
+  }
+  .home-copy h1 small {
+    font-size: 20px;
+  }
+  .home-copy .button {
+    font-size: 11px;
+    padding-inline: 14px;
+  }
+  .quick-booking {
+    width: 330px;
+  }
+  .home-services {
+    grid-template-columns: minmax(0, 1fr) 330px;
+    gap: 22px;
+  }
+  .home-benefits {
+    padding-right: 355px;
+  }
+  .benefit {
+    gap: 15px;
+    padding-inline: 15px;
+    font-size: 12px;
+  }
+  .icon-circle {
+    width: 53px;
+    height: 53px;
+  }
+  .booking-layout {
+    grid-template-columns: minmax(0, 1fr) 310px;
+  }
+  .booking-top {
+    grid-template-columns: 1.5fr 1fr;
+  }
+  .booking-bottom {
+    grid-template-columns: 1fr 1.1fr 1fr;
+  }
+  .booking-step {
+    padding: 10px;
+  }
+  .step-heading {
+    gap: 9px;
+  }
+  .step-heading h2 {
+    font-size: 12px;
+  }
+  .booking-bottom .time-slots {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .slot-legend {
+    font-size: 8px;
+    gap: 5px;
+  }
+  .slot-legend i {
+    width: 11px;
+    height: 11px;
+  }
+  .footer-inner nav {
+    gap: 14px;
+  }
+  .footer-inner {
+    gap: 16px;
+  }
+  .about-story {
+    gap: 15px;
+  }
+  .value-card {
+    padding: 15px 12px;
+    gap: 8px;
+    grid-template-columns: 29px 1fr;
+  }
+  .value-card > svg {
+    width: 27px;
+  }
+  .about-story h2 {
+    font-size: 23px;
+  }
+  .about-story p {
+    font-size: 11px;
+  }
+  .founder-section {
+    gap: 18px;
+  }
+  .gallery-layout {
+    grid-template-columns: minmax(0, 1fr) 270px;
+  }
+  .gallery-grid {
+    grid-auto-rows: 155px;
+  }
+  .transformation h2 {
+    font-size: 28px;
+  }
+  .transformation {
+    gap: 8px;
+    padding: 12px;
+  }
+  .instagram-panel .button {
+    font-size: 9px;
+  }
+  .contact-cards {
+    max-width: 910px;
+  }
+  .contact-cards article {
+    gap: 10px;
+  }
+  .map-panel {
+    gap: 15px;
+  }
+}
+@media (max-width: 1200px) {
+  .header-contact a:last-child {
+    display: none;
+  }
+  .header-inner {
+    gap: 12px;
+  }
+  .main-nav {
+    gap: 17px;
+  }
+  .logo img {
+    width: 170px;
+  }
+  .header-book {
+    padding-inline: 9px;
+  }
+  .container {
+    width: calc(100% - 40px);
+  }
+  .home-copy {
+    max-width: 390px;
+  }
+  .home-copy h1 {
+    font-size: 63px;
+  }
+  .home-copy .signature {
+    font-size: 30px;
+  }
+  .home-copy > p:not(.signature) {
+    font-size: 12px;
+  }
+  .quick-booking {
+    width: 300px;
+    padding: 18px;
+  }
+  .quick-booking h2 {
+    font-size: 17px;
+  }
+  .home-services {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 18px;
+  }
+  .home-benefits {
+    padding-right: 325px;
+  }
+  .benefit {
+    padding-inline: 10px;
+    gap: 10px;
+    font-size: 11px;
+  }
+  .icon-circle {
+    width: 45px;
+    height: 45px;
+  }
+  .icon-circle svg {
+    width: 26px;
+  }
+  .service-content {
+    padding: 10px;
+  }
+  .service-content h3 {
+    font-size: 12px;
+  }
+  .service-content > p {
+    font-size: 11px;
+  }
+  .service-meta strong {
+    font-size: 13px;
+  }
+  .service-meta span {
+    font-size: 10px;
+  }
+  .benefits-cta {
+    gap: 20px;
+  }
+  .benefits-cta > .button {
+    min-width: 220px;
+    font-size: 10px;
+  }
+  .booking-layout {
+    grid-template-columns: minmax(0, 1fr) 280px;
+  }
+  .booking-top {
+    grid-template-columns: 1fr;
+  }
+  .services-choices {
+    max-height: 155px;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .choice-card img {
+    height: 70px;
+  }
+  .barber-choices .choice-card {
+    display: flex;
+  }
+  .barber-choices .choice-card img {
+    width: 55px;
+    height: 75px;
+  }
+  .barber-choices .choice-description {
+    justify-content: center;
+    padding: 6px;
+  }
+  .barber-choices .choice-check {
+    right: 3px;
+    top: 3px;
+    width: 16px;
+    height: 16px;
+  }
+  .booking-bottom {
+    grid-template-columns: 1fr 1.2fr;
+  }
+  .booking-bottom > .booking-step:last-child {
+    grid-column: 1/-1;
+  }
+  .customer-fields {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .booking-summary h2 {
+    font-size: 12px;
+    gap: 8px;
+  }
+  .booking-summary .button {
+    font-size: 10px;
+  }
+  .privacy-note {
+    font-size: 8px;
+  }
+  .gallery-grid {
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 140px;
+  }
+  .gallery-bottom {
+    grid-template-columns: 1fr 1fr;
+  }
+  .transformation {
+    flex-wrap: wrap;
+  }
+  .transformation > div {
+    flex-basis: 100%;
+  }
+  .transformation figure {
+    width: 40%;
+  }
+  .instagram-panel {
+    grid-template-columns: 1fr;
+  }
+  .instagram-panel > img {
+    display: none;
+  }
+  .about-story {
+    grid-template-columns: 1fr 1.2fr;
+  }
+  .value-card {
+    padding: 20px;
+  }
+  .about-story p {
+    font-size: 12px;
+  }
+  .about-benefits .section-heading {
+    min-width: 230px;
+  }
+  .about-benefits h2 {
+    font-size: 24px;
+  }
+  .founder-section {
+    grid-template-columns: 0.8fr 1.2fr;
+  }
+  .statistics {
+    grid-column: 1/-1;
+  }
+  .reviews-section {
+    grid-template-columns: 1fr 1fr;
+  }
+  .reviews-section .reviews-grid {
+    grid-column: 1/-1;
+    grid-row: 2;
+  }
+  .contact-cards {
+    max-width: 830px;
+  }
+  .contact-cards article {
+    padding: 12px 10px;
+    gap: 8px;
+  }
+  .contact-cards svg {
+    width: 34px;
+    height: 34px;
+    padding: 7px;
+  }
+  .contact-cards h3,
+  .contact-cards p,
+  .contact-cards a {
+    font-size: 11px;
+  }
+  .contact-layout {
+    grid-template-columns: 1fr 1.1fr;
+  }
+  .map-panel {
+    grid-template-columns: 1fr;
+  }
+  .map-panel > div {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .map-panel h3 {
+    display: none;
+  }
+  .map-panel p {
+    margin: 0;
+    flex: 1;
+  }
+  .map-panel .button {
+    width: auto;
+    font-size: 11px;
+  }
+  .contact-cinematic {
+    min-height: 185px;
+    padding: 20px;
+  }
+  .contact-form-panel {
+    padding: 20px;
+  }
+  .footer-inner {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .footer-inner small {
+    flex-basis: 100%;
+    text-align: center;
+  }
+}
+@media (max-width: 1024px) {
+  .main-nav {
+    gap: 13px;
+  }
+  .header-contact {
+    display: none;
+  }
+  .site-header {
+    height: 74px;
+  }
+  .home-copy {
+    max-width: 355px;
+  }
+  .home-copy h1 {
+    font-size: 58px;
+  }
+  .home-copy h1 small {
+    font-size: 17px;
+  }
+  .home-copy .button-row {
+    gap: 8px;
+  }
+  .home-copy .button {
+    font-size: 10px;
+    padding-inline: 10px;
+  }
+  .quick-booking {
+    width: 280px;
+  }
+  .home-services {
+    grid-template-columns: minmax(0, 1fr) 260px;
+  }
+  .home-benefits {
+    padding-right: 300px;
+  }
+  .home-benefits .benefit {
+    flex-direction: column;
+    text-align: center;
+    gap: 7px;
+    padding-inline: 5px;
+    font-size: 10px;
+  }
+  .service-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .home-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .home-grid .service-card img {
+    aspect-ratio: 2.2;
+  }
+  .info-panel {
+    padding: 8px 18px;
+  }
+  .services-section {
+    margin-top: 18px;
+  }
+  .hero-services {
+    background-size: 65% auto;
+  }
+  .hero-services .hero-description {
+    max-width: 590px;
+  }
+  .hero-copy {
+    max-width: 600px;
+  }
+  .hero-contact h1 {
+    font-size: 58px;
+  }
+  .contact-cards {
+    max-width: 100%;
+  }
+  .contact-cards article {
+    background: #090909e8;
+  }
+  .hero-contact .hero-inner {
+    padding-bottom: 20px;
+  }
+  .gallery-layout {
+    grid-template-columns: minmax(0, 1fr) 245px;
+  }
+  .gallery-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .gallery-image:nth-child(3) {
+    grid-row: span 1;
+  }
+  .gallery-cta {
+    padding: 13px;
+  }
+  .gallery-grid {
+    grid-auto-rows: 130px;
+  }
+  .booking-layout {
+    grid-template-columns: minmax(0, 1fr) 265px;
+  }
+  .services-choices {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .about-benefits {
+    display: block;
+    padding-top: 18px;
+  }
+  .about-benefits .section-heading {
+    text-align: center;
+  }
+  .about-benefits .eyebrow {
+    justify-content: center;
+  }
+  .contact-layout {
+    gap: 15px;
+  }
+  .form-grid {
+    gap: 10px;
+  }
+  .contact-form-panel h2 {
+    font-size: 26px;
+  }
+}
+@media (max-width: 800px) {
+  .site-header {
+    height: 70px;
+  }
+  .header-inner {
+    width: calc(100% - 32px);
+  }
+  .logo img {
+    width: 165px;
+    height: 58px;
+  }
+  .menu-toggle {
+    display: grid;
+    place-items: center;
+  }
+  .header-book {
+    margin-left: auto;
+  }
+  .main-nav {
+    position: absolute;
+    top: 69px;
+    left: 0;
+    right: 0;
+    height: auto;
+    background: #080808fa;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 0 24px;
+    max-height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    transition:
+      max-height 0.3s,
+      padding 0.3s,
+      visibility 0.3s;
+  }
+  .main-nav.is-open {
+    max-height: 400px;
+    padding-block: 12px;
+    visibility: visible;
+  }
+  .main-nav a {
+    font-size: 14px;
+    padding: 12px 3px;
+  }
+  .main-nav a:after {
+    bottom: 4px;
+    right: auto;
+    width: 35px;
+  }
+  .home-hero {
+    background-position:
+      center,
+      90% top;
+    background-size:
+      cover,
+      auto 490px;
+  }
+  .home-hero-inner {
+    flex-wrap: wrap;
+  }
+  .home-copy {
+    max-width: 490px;
+    min-height: 480px;
+    padding-top: 40px;
+  }
+  .home-copy h1 {
+    font-size: 72px;
+  }
+  .home-copy h1 small {
+    font-size: 21px;
+  }
+  .home-copy .signature {
+    font-size: 34px;
+    text-align: left;
+  }
+  .home-copy > p:not(.signature) {
+    font-size: 13px;
+    max-width: 400px;
+  }
+  .home-copy .button {
+    font-size: 11px;
+    padding-inline: 17px;
+  }
+  .quick-booking {
+    width: 100%;
+    margin: 0 0 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 20px;
+  }
+  .quick-booking h2 {
+    grid-column: 1/-1;
+    font-size: 21px;
+    margin-bottom: 3px;
+  }
+  .quick-booking label {
+    margin: 6px 0 0;
+  }
+  .quick-booking label[for="quick-service"] {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .quick-booking #quick-service {
+    grid-column: 1;
+    grid-row: 3;
+  }
+  .quick-booking label[for="quick-date"] {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .quick-booking #quick-date {
+    grid-column: 2;
+    grid-row: 3;
+  }
+  .quick-booking > p,
+  .quick-booking .time-slots,
+  .quick-booking .slot-legend,
+  .quick-booking .button {
+    grid-column: 1/-1;
+  }
+  .time-slots.compact {
+    grid-template-columns: repeat(6, 1fr);
+    max-height: 135px;
+    margin-top: 0;
+  }
+  .quick-booking > p {
+    margin: 10px 0 0;
+  }
+  .quick-booking .slot-legend {
+    justify-content: flex-start;
+    gap: 25px;
+    margin-top: 5px;
+    font-size: 10px;
+  }
+  .quick-booking .button {
+    margin-top: 5px;
+  }
+  .home-benefits {
+    padding-right: 0;
+  }
+  .home-benefits .benefit {
+    flex-direction: row;
+    text-align: left;
+    font-size: 11px;
+  }
+  .home-services {
+    grid-template-columns: 1fr;
+  }
+  .home-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .home-services > .info-panel {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .home-services > .info-panel > div:nth-child(3) {
+    border-bottom: 0;
+  }
+  .hero-inner {
+    padding-top: 25px;
+    padding-bottom: 25px;
+  }
+  .page-hero {
+    background-position: 80% center;
+  }
+  .page-hero:before {
+    background: linear-gradient(90deg, #030303ed, #030303b0 50%, #03030340);
+  }
+  .hero-quote {
+    display: none;
+  }
+  .hero-gallery .hero-description {
+    max-width: 490px;
+  }
+  .hero-booking .hero-copy {
+    max-width: 400px;
+  }
+  .hero-booking h1 {
+    font-size: 54px;
+  }
+  .hero-about {
+    background-size: auto 100%;
+    min-height: 300px;
+  }
+  .hero-contact h1 {
+    font-size: 54px;
+  }
+  .hero-contact .hero-description {
+    font-size: 14px;
+    max-width: 600px;
+  }
+  .contact-cards {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 590px;
+    gap: 9px;
+    margin-top: 20px;
+  }
+  .contact-cards article {
+    padding: 12px;
+  }
+  .contact-cards p,
+  .contact-cards a,
+  .contact-cards h3 {
+    font-size: 12px;
+  }
+  .booking-layout {
+    grid-template-columns: 1fr;
+  }
+  .booking-top {
+    grid-template-columns: 1.2fr 1fr;
+  }
+  .services-choices {
+    grid-template-columns: repeat(3, 1fr);
+    max-height: 168px;
+  }
+  .barber-choices .choice-card {
+    display: block;
+  }
+  .barber-choices .choice-card img {
+    width: 100%;
+    height: 107px;
+  }
+  .barber-choices .choice-description {
+    padding: 7px;
+  }
+  .booking-bottom {
+    grid-template-columns: 1fr 1fr;
+  }
+  .booking-sidebar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .booking-sidebar > .info-panel {
+    margin: 0;
+  }
+  .booking-summary .button {
+    font-size: 11px;
+  }
+  .booking-bottom .time-slots {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .slot-legend {
+    font-size: 10px;
+  }
+  .benefits-cta {
+    flex-direction: column;
+    gap: 0;
+    padding-bottom: 20px;
+  }
+  .benefits-cta .benefits {
+    width: 100%;
+  }
+  .benefits-cta > .button {
+    width: 270px;
+  }
+  .gallery-layout {
+    grid-template-columns: 1fr;
+  }
+  .gallery-grid {
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 155px;
+  }
+  .gallery-cta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 20px;
+  }
+  .gallery-cta .info-panel {
+    grid-column: 2;
+    grid-row: 1/4;
+    margin: 0;
+    border-top: 0;
+    border-left: 1px solid var(--border);
+    padding-left: 20px;
+  }
+  .gallery-cta > p {
+    margin: 0;
+  }
+  .gallery-bottom {
+    grid-template-columns: 1fr 1fr;
+  }
+  .transformation img {
+    height: 130px;
+  }
+  .instagram-panel {
+    align-content: center;
+  }
+  .about-story {
+    gap: 18px;
+  }
+  .founder-section > img {
+    height: 220px;
+  }
+  .reviews-section {
+    gap: 15px;
+  }
+  .contact-layout {
+    grid-template-columns: 1fr;
+  }
+  .contact-form-panel {
+    padding: 25px;
+  }
+  .map-panel {
+    grid-template-columns: 1.5fr 1fr;
+  }
+  .map-panel > div {
+    display: block;
+  }
+  .map-panel h3 {
+    display: block;
+  }
+  .map-panel p {
+    margin-bottom: 20px;
+  }
+  .map-panel .button {
+    width: 100%;
+  }
+  .contact-cinematic {
+    min-height: 230px;
+  }
+  .footer-inner nav {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .footer-inner .logo {
+    flex-basis: 100%;
+    display: flex;
+    justify-content: center;
+  }
+}
+@media (max-width: 540px) {
+  .container {
+    width: calc(100% - 32px);
+  }
+  .header-book {
+    font-size: 8px;
+    min-height: 35px;
+    padding: 7px 9px;
+  }
+  .header-inner {
+    gap: 9px;
+  }
+  .logo img {
+    width: 140px;
+  }
+  .menu-toggle {
+    padding: 5px;
+  }
+  .menu-toggle svg {
+    width: 22px;
+  }
+  .home-hero {
+    background-position:
+      center,
+      68% top;
+    background-size:
+      cover,
+      auto 430px;
+    background-image:
+      linear-gradient(90deg, #000d, #0006 60%, #0004),
+      url("/images/hero-barber.webp");
+  }
+  .home-copy {
+    min-height: 450px;
+    padding-top: 36px;
+    max-width: 100%;
+  }
+  .home-copy h1 {
+    font-size: 64px;
+    line-height: 1.05;
+  }
+  .home-copy h1 > span {
+    font-size: 0.75em;
+    letter-spacing: -2px;
+  }
+  .home-copy h1 small {
+    font-size: 18px;
+    letter-spacing: 8px;
+    gap: 12px;
+    margin-block: 10px;
+  }
+  .home-copy h1 small:before,
+  .home-copy h1 small:after {
+    width: 43px;
+  }
+  .home-copy .signature {
+    font-size: 29px;
+    margin: 16px 0;
+  }
+  .home-copy > p:not(.signature) {
+    font-size: 12px;
+    max-width: 335px;
+    text-shadow: 0 1px 5px black;
+  }
+  .home-copy .button-row {
+    margin-top: 23px;
+    gap: 8px;
+  }
+  .home-copy .button {
+    font-size: 10px;
+    padding: 12px;
+    min-height: 44px;
+    gap: 7px;
+  }
+  .home-copy .button svg {
+    width: 15px;
+  }
+  .quick-booking {
+    padding: 19px 16px;
+    gap: 8px 10px;
+  }
+  .quick-booking h2 {
+    font-size: 18px;
+  }
+  .quick-booking label {
+    font-size: 11px;
+  }
+  .quick-booking input,
+  .quick-booking select {
+    font-size: 11px;
+    padding: 9px 7px;
+  }
+  .time-slots.compact {
+    grid-template-columns: repeat(4, 1fr);
+    max-height: 174px;
+  }
+  .quick-booking .slot-legend {
+    gap: 18px;
+    font-size: 9px;
+  }
+  .benefits {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px 0;
+    padding: 20px 0;
+  }
+  .benefit:nth-child(2) {
+    border-right: 0;
+  }
+  .benefit {
+    justify-content: flex-start;
+    gap: 12px;
+    padding-left: 16px;
+  }
+  .home-benefits .benefit {
+    font-size: 11px;
+  }
+  .icon-circle {
+    width: 44px;
+    height: 44px;
+  }
+  .home-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .center-title {
+    font-size: 17px;
+  }
+  .service-content {
+    padding: 10px;
+  }
+  .service-content h3 {
+    font-size: 12px;
+  }
+  .service-meta strong {
+    font-size: 13px;
+  }
+  .service-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 11px;
+  }
+  .service-card img {
+    aspect-ratio: 1.65;
+  }
+  .service-content > p {
+    font-size: 11px;
+    min-height: 49px;
+  }
+  .home-services > .info-panel {
+    padding: 5px 12px;
+    gap: 0 10px;
+  }
+  .home-services > .info-panel > div {
+    gap: 9px;
+  }
+  .info-panel svg {
+    width: 21px;
+    height: 21px;
+  }
+  .info-panel h3,
+  .info-panel p,
+  .info-panel a {
+    font-size: 11px;
+  }
+  .page-hero {
+    min-height: 230px;
+    background-size: auto 100%;
+  }
+  .hero-inner {
+    padding-block: 28px;
+  }
+  .hero-inner h1 {
+    font-size: 49px;
+  }
+  .hero-description {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .eyebrow {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+  }
+  .hero-services .hero-description {
+    max-width: 315px;
+  }
+  .hero-booking .hero-description {
+    max-width: 320px;
+    font-size: 12px;
+  }
+  .hero-perks {
+    font-size: 8px;
+    gap: 9px;
+  }
+  .hero-gallery .hero-description {
+    max-width: 340px;
+    font-size: 12px;
+  }
+  .hero-about .hero-description {
+    font-size: 15px;
+  }
+  .about-intro {
+    font-size: 12px;
+    max-width: 355px;
+  }
+  .hero-about .signature {
+    font-size: 25px;
+  }
+  .hero-contact h1 {
+    font-size: 45px;
+    max-width: 310px;
+  }
+  .hero-contact .hero-description {
+    font-size: 12px;
+    max-width: 340px;
+  }
+  .contact-cards {
+    gap: 8px;
+  }
+  .contact-cards article {
+    padding: 11px 9px;
+    gap: 8px;
+  }
+  .contact-cards svg {
+    width: 28px;
+    height: 28px;
+    padding: 5px;
+  }
+  .contact-cards h3,
+  .contact-cards a,
+  .contact-cards p {
+    font-size: 10px;
+  }
+  .contact-cards small {
+    font-size: 8px;
+  }
+  .booking-top {
+    grid-template-columns: 1fr;
+  }
+  .services-choices {
+    grid-template-columns: repeat(3, 1fr);
+    max-height: 290px;
+  }
+  .choice-card img {
+    height: 85px;
+  }
+  .choice-description strong {
+    font-size: 12px;
+  }
+  .choice-description b {
+    font-size: 13px;
+  }
+  .choice-description small {
+    font-size: 11px;
+  }
+  .barber-choices .choice-card img {
+    height: 125px;
+  }
+  .booking-step {
+    padding: 15px;
+  }
+  .step-heading h2 {
+    font-size: 14px;
+  }
+  .step-heading p {
+    font-size: 11px;
+  }
+  .booking-bottom {
+    grid-template-columns: 1fr;
+  }
+  .booking-bottom > .booking-step:last-child {
+    grid-column: auto;
+  }
+  .calendar-grid button {
+    min-height: 40px;
+    font-size: 12px;
+  }
+  .calendar-grid small {
+    font-size: 11px;
+  }
+  .calendar-header {
+    font-size: 13px;
+  }
+  .calendar-header button {
+    padding: 5px;
+  }
+  .booking-bottom .time-slots button {
+    font-size: 12px;
+    min-height: 38px;
+  }
+  .customer-fields {
+    grid-template-columns: 1fr;
+  }
+  .customer-fields label {
+    font-size: 12px;
+  }
+  .customer-fields input,
+  .customer-fields textarea {
+    font-size: 13px;
+    min-height: 42px;
+    padding: 10px;
+  }
+  .booking-sidebar {
+    grid-template-columns: 1fr;
+  }
+  .booking-summary {
+    padding: 20px;
+  }
+  .booking-summary h2 {
+    font-size: 14px;
+  }
+  .booking-summary dl {
+    font-size: 12px;
+  }
+  .booking-summary .button {
+    font-size: 12px;
+    min-height: 48px;
+  }
+  .privacy-note {
+    font-size: 9px;
+  }
+  .booking-sidebar > .info-panel {
+    padding: 10px 20px;
+  }
+  .booking-sidebar .info-panel h3,
+  .booking-sidebar .info-panel p,
+  .booking-sidebar .info-panel a {
+    font-size: 12px;
+  }
+  .filter-bar {
+    gap: 6px;
+    margin-top: -17px;
+    justify-content: space-between;
+  }
+  .filter-bar button {
+    min-width: 0;
+    flex: 1;
+    font-size: 10px;
+    padding: 10px 8px;
+  }
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 150px;
+    gap: 8px;
+  }
+  .gallery-image:nth-child(3) {
+    grid-row: span 2;
+  }
+  .gallery-cta {
+    grid-template-columns: 1fr;
+  }
+  .gallery-cta .info-panel {
+    grid-column: auto;
+    grid-row: auto;
+    border-left: 0;
+    padding: 12px 0 0;
+    border-top: 1px solid var(--border);
+  }
+  .gallery-cta .info-panel > div {
+    padding: 10px 0;
+  }
+  .gallery-bottom {
+    grid-template-columns: 1fr;
+  }
+  .transformation {
+    padding: 18px;
+    gap: 12px;
+  }
+  .transformation > div {
+    padding-bottom: 5px;
+  }
+  .transformation h2 {
+    font-size: 34px;
+  }
+  .transformation figure {
+    width: calc(50% - 30px);
+  }
+  .transformation img {
+    height: 155px;
+  }
+  .instagram-panel {
+    padding: 20px;
+    grid-template-columns: 1.5fr 1fr;
+  }
+  .instagram-panel > img {
+    display: block;
+    max-height: 190px;
+  }
+  .instagram-panel .button {
+    font-size: 9px;
+    gap: 5px;
+  }
+  .instagram-panel .button svg {
+    width: 13px;
+  }
+  .instagram-panel h2 {
+    font-size: 27px;
+  }
+  .about-story {
+    grid-template-columns: 1fr;
+    padding-top: 20px;
+    gap: 20px;
+  }
+  .story-image {
+    height: 215px;
+  }
+  .about-story h2 {
+    font-size: 31px;
+  }
+  .about-story p {
+    font-size: 13px;
+  }
+  .value-card {
+    padding: 23px;
+    grid-template-columns: 36px 1fr;
+  }
+  .value-card h3 {
+    font-size: 14px;
+  }
+  .value-card ul {
+    font-size: 12px;
+  }
+  .about-benefits .section-heading {
+    text-align: left;
+  }
+  .about-benefits .eyebrow {
+    justify-content: flex-start;
+  }
+  .founder-section {
+    grid-template-columns: 1fr;
+    padding-block: 20px;
+    gap: 17px;
+  }
+  .founder-section > img {
+    height: 255px;
+    object-position: center 35%;
+  }
+  .founder-section h2 {
+    font-size: 32px;
+  }
+  .founder-section p {
+    font-size: 13px;
+  }
+  .founder-section .signature {
+    font-size: 25px;
+  }
+  .statistics {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px 0;
+    padding: 22px 10px;
+  }
+  .statistics > div:nth-child(2) {
+    border: 0;
+  }
+  .statistics span {
+    font-size: 12px;
+  }
+  .reviews-section {
+    grid-template-columns: 1fr;
+    gap: 17px;
+  }
+  .reviews-grid {
+    grid-template-columns: 1fr;
+  }
+  .reviews-section .reviews-grid {
+    grid-column: auto;
+    grid-row: auto;
+  }
+  .about-cta {
+    padding: 25px;
+  }
+  .contact-form-panel {
+    padding: 20px 16px;
+  }
+  .contact-form-panel h2 {
+    font-size: 28px;
+  }
+  .contact-form-panel > p {
+    font-size: 12px;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .contact-form-panel label {
+    font-size: 12px;
+  }
+  .contact-form-panel input,
+  .contact-form-panel select,
+  .contact-form-panel textarea {
+    font-size: 13px;
+  }
+  .map-panel {
+    grid-template-columns: 1fr;
+    padding: 12px;
+  }
+  .map-panel iframe {
+    height: 230px;
+  }
+  .map-panel > div {
+    padding: 8px;
+  }
+  .map-panel h3 {
+    margin-bottom: 12px;
+  }
+  .map-panel p {
+    font-size: 13px;
+  }
+  .contact-cinematic {
+    padding: 25px 15px;
+    background-size:
+      cover,
+      auto 100%;
+    min-height: 240px;
+  }
+  .contact-cinematic h2 {
+    font-size: 31px;
+  }
+  .contact-cinematic > p:last-child {
+    max-width: 240px;
+    font-size: 12px;
+  }
+  .footer-inner nav {
+    gap: 12px 18px;
+  }
+  .footer-inner nav a {
+    font-size: 11px;
+  }
+  .site-footer {
+    padding-bottom: 75px;
+  }
+  .whatsapp-float {
+    right: 17px;
+    bottom: 17px;
+    width: 53px;
+    height: 53px;
+  }
+  .modal {
+    padding: 30px 20px;
+  }
+  .modal h2 {
+    font-size: 30px;
+  }
+  .lightbox {
+    padding: 10px;
+  }
+  .loading-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
