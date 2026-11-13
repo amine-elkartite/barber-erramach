@@ -1,9 +1,11 @@
 import { pageHandler } from "./seo.js";
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import { fileURLToPath } from "node:url";
 import { existsSync } from "node:fs";
 import api from "./routes/api.js";
+
 const app = express();
 app.disable("x-powered-by");
 app.use((req, res, next) => {
@@ -22,6 +24,7 @@ app.use(
   }),
 );
 app.use(express.json({ limit: "20kb" }));
+app.use(cookieParser());
 app.use("/api", api);
 app.use("/api", (req, res) =>
   res
@@ -42,6 +45,8 @@ app.get("/sitemap.xml", (req, res) =>
       `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${["/", "/services", "/booking", "/gallery", "/about", "/contact"].map((p) => `<url><loc>${origin() + p}</loc></url>`).join("")}</urlset>`,
     ),
 );
+const uploads = fileURLToPath(new URL("../uploads", import.meta.url));
+app.use("/uploads", express.static(uploads, { maxAge: "7d" }));
 const dist = fileURLToPath(new URL("../client/dist", import.meta.url));
 if (existsSync(dist)) {
   app.use(express.static(dist, { index: false }));

@@ -2,7 +2,8 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
-const Admin = lazy(() => import("./pages/Admin"));
+import { SettingsProvider } from "./contexts/SettingsContext";
+const Admin = lazy(() => import("./pages/admin"));
 const Services = lazy(() => import("./pages/Services"));
 const Booking = lazy(() => import("./pages/Booking"));
 const Gallery = lazy(() => import("./pages/Gallery"));
@@ -11,7 +12,8 @@ const Contact = lazy(() => import("./pages/Contact"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 export default function App() {
   return (
-    <BrowserRouter>
+    <SettingsProvider>
+      <BrowserRouter>
       <Suspense
         fallback={
           <div className="page-loading" role="status">
@@ -32,6 +34,7 @@ export default function App() {
           </Route>
         </Routes>
       </Suspense>
-    </BrowserRouter>
+      </BrowserRouter>
+    </SettingsProvider>
   );
 }

@@ -10,5 +10,24 @@ export const business = {
   openingHours: "Lun - Sam : 09:00 - 20:00",
   timezone: "Africa/Casablanca",
 };
-export const whatsappUrl = `https://wa.me/${business.internationalPhone.replace("+", "")}?text=${encodeURIComponent("Bonjour Mohamed, je souhaite prendre rendez-vous chez ER RAMMACH Barber Shop.")}`;
-export const instagramUrl = `https://www.instagram.com/${business.instagramHandle}/`;
+
+export function toInternationalPhone(phone) {
+  let d = String(phone || "");
+  if (d.startsWith("+")) return d;
+  if (d.startsWith("00")) return "+" + d.slice(2).replace(/[^\d]/g, "");
+  if (d.startsWith("0")) return "+212" + d.slice(1).replace(/[^\d]/g, "");
+  return "+" + d.replace(/[^\d]/g, "");
+}
+
+export function whatsAppUrlFor(internationalPhone) {
+  return `https://wa.me/${internationalPhone.replace("+", "")}?text=${encodeURIComponent(
+    "Bonjour Mohamed, je souhaite prendre rendez-vous chez ER RAMMACH Barber Shop.",
+  )}`;
+}
+
+export function instagramUrlFor(handle) {
+  return `https://www.instagram.com/${handle}/`;
+}
+
+export const whatsappUrl = whatsAppUrlFor(business.internationalPhone);
+export const instagramUrl = instagramUrlFor(business.instagramHandle);

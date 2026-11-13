@@ -9,10 +9,12 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { Hero, Button } from "../components/Common";
-import { business, instagramUrl } from "../config/business";
+import { useSettings } from "../contexts/SettingsContext";
 import { api } from "../services/api";
 import Modal from "../components/Modal";
 export default function Contact() {
+  const { business, instagramUrl, settings } = useSettings();
+  const sunday = settings.business_opening_hours_sunday || "Dimanche : Fermé";
   const [pending, setPending] = useState(false),
     [error, setError] = useState(""),
     [sent, setSent] = useState(false),
@@ -93,7 +95,7 @@ export default function Contact() {
               <p>
                 {business.openingHours}
                 <br />
-                Dimanche : Fermé
+                {sunday}
               </p>
             </div>
           </article>

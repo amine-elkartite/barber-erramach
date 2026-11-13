@@ -15,12 +15,40 @@ async function selection(db, serviceId, barberId, lock = false) {
     throw fail(404, "Service ou barbier indisponible.");
   return { service: s[0], barber: b[0] };
 }
+async function isClosedDay(db, date) {
+  const [rows] = await db.execute(
+    "SELECT id FROM closed_days WHERE closed_date=?",
+    [date],
+  );
+  return rows.length > 0;
+}
+
+async function dayHours(db, date) {
+  const weekday = new Date(date + "T12:00:00Z").getUTCDay();
+  const [rows] = await db.execute(
+    "SELECT open_time,close_time,break_start,break_end,is_open FROM opening_hours WHERE day_of_week=?",
+    [weekday],
+  );
+  if (!rows.length) return null;
+  const row = rows[0];
+  if (!Number(row.is_open)) return null;
+  const hours = { open: toMinutes(row.open_time), close: toMinutes(row.close_time) };
+  if (row.break_start && row.break_end) {
+    hours.breakStart = toMinutes(row.break_start);
+    hours.breakEnd = toMinutes(row.break_end);
+  }
+  return hours;
+}
+
 async function slots(db, date, barberId, service) {
+  if (await isClosedDay(db, date)) return [];
+  const hours = await dayHours(db, date);
+  if (!hours) return [];
   const [rows] = await db.execute(
     "SELECT appointment_time,duration FROM appointments WHERE barber_id=? AND appointment_date=? AND status='confirmed'",
     [barberId, date],
   );
-  return makeSlots(date, service.duration, rows);
+  return makeSlots(date, service.duration, rows, undefined, hours);
 }
 export async function availability(req, res) {
   const { date, barberId, serviceId } = req.query;
@@ -31,21 +59,23 @@ export async function availability(req, res) {
     data: await slots(pool, date, barberId, service),
   });
 }
-export async function createAppointment(req, res) {
+export async function bookAppointment(body) {
+  const {
+    serviceId,
+    barberId,
+    date,
+    time,
+    name,
+    phone,
+    email = "",
+    message = "",
+  } = body;
   const db = await pool.getConnection();
   try {
     await db.beginTransaction();
-    const {
-      serviceId,
-      barberId,
-      date,
-      time,
-      name,
-      phone,
-      email,
-      message = "",
-    } = req.body;
     const { service, barber } = await selection(db, serviceId, barberId, true);
+    if (await isClosedDay(db, date))
+      throw fail(409, "Le salon est fermé ce jour.");
     const available = await slots(db, date, barberId, service);
     if (!available.some((s) => s.time === time && s.status === "available"))
       throw fail(
@@ -54,7 +84,7 @@ export async function createAppointment(req, res) {
       );
     const displayedPrice = formatServicePrice(service);
     const [result] = await db.execute(
-      "INSERT INTO appointments (service_id,barber_id,service_name,displayed_price,price_type,customer_name,customer_phone,customer_email,appointment_date,appointment_time,duration,message,total_price) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+      "INSERT INTO appointments (service_id,barber_id,service_name,displayed_price,price_type,customer_name,customer_phone,customer_email,appointment_date,appointment_time,duration,message,total_price,status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,'confirmed')",
       [
         serviceId,
         barberId,
@@ -78,22 +108,16 @@ export async function createAppointment(req, res) {
         [barberId, date, minute, result.insertId],
       );
     await db.commit();
-    res
-      .status(201)
-      .json({
-        success: true,
-        message: "Rendez-vous confirmé !",
-        data: {
-          id: result.insertId,
-          service: service.name,
-          barber: barber.name,
-          date,
-          time,
-          total: service.price,
-          displayedPrice,
-          priceType: service.price_type,
-        },
-      });
+    return {
+      id: result.insertId,
+      service: service.name,
+      barber: barber.name,
+      date,
+      time,
+      total: service.price,
+      displayedPrice,
+      priceType: service.price_type,
+    };
   } catch (error) {
     await db.rollback();
     if (error.code === "ER_DUP_ENTRY")
@@ -102,4 +126,12 @@ export async function createAppointment(req, res) {
   } finally {
     db.release();
   }
+}
+export async function createAppointment(req, res) {
+  const data = await bookAppointment(req.body);
+  res.status(201).json({
+    success: true,
+    message: "Rendez-vous confirmé !",
+    data,
+  });
 }

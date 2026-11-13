@@ -2,10 +2,15 @@ import { useEffect, useState } from "react";
 const base = import.meta.env.VITE_API_URL || "/api";
 export async function api(path, options = {}) {
   let response;
+  const isFormData = typeof FormData !== "undefined" && options.body instanceof FormData;
+  const headers = isFormData
+    ? { ...options.headers }
+    : { "Content-Type": "application/json", ...options.headers };
   try {
     response = await fetch(base + path, {
+      credentials: "include",
       ...options,
-      headers: { "Content-Type": "application/json", ...options.headers },
+      headers,
     });
   } catch (error) {
     if (error.name === "AbortError") throw error;
@@ -23,6 +28,15 @@ export async function api(path, options = {}) {
     throw error;
   }
   return result.data;
+}
+export async function apiRaw(path, options = {}) {
+  const isFormData = typeof FormData !== "undefined" && options.body instanceof FormData;
+  const response = await fetch(base + path, {
+    credentials: "include",
+    ...options,
+    headers: isFormData ? { ...options.headers } : { "Content-Type": "application/json", ...options.headers },
+  });
+  return response;
 }
 export function useApi(path) {
   const [state, setState] = useState({

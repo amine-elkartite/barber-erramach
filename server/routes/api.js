@@ -16,7 +16,7 @@ const router = Router();
 router.use("/admin", admin);
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  limit: 20,
+  limit: 100,
   standardHeaders: "draft-8",
   legacyHeaders: false,
   message: {
@@ -38,6 +38,20 @@ router.get(
   validate,
   availability,
 );
+router.get("/settings", async (_req, res) => {
+  const [rows] = await pool.query(
+    "SELECT setting_key,setting_value FROM settings",
+  );
+  const settings = rows.reduce((acc, r) => {
+    let v = r.setting_value;
+    try {
+      v = v.startsWith("[") || v.startsWith("{") ? JSON.parse(v) : v;
+    } catch {}
+    acc[r.setting_key] = v;
+    return acc;
+  }, {});
+  res.json({ success: true, message: "Paramètres chargés.", data: settings });
+});
 router.post(
   "/appointments",
   limiter,

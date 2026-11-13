@@ -17,8 +17,22 @@ import {
   ApiState,
 } from "../components/Common";
 import { useApi } from "../services/api";
+import { useSettings } from "../contexts/SettingsContext";
 export default function About() {
   const reviews = useApi("/reviews");
+  const { settings } = useSettings();
+  const aboutText =
+    settings.about_text ||
+    "ER RAMMACH Mohamed Barber Shop est un salon dédié à l’élégance masculine, où tradition et modernité se rencontrent. Fondé par Mohamed Er Rammach, passionné par l’art du barbering, notre salon accueille chaque client dans un cadre raffiné et chaleureux pour une expérience unique et personnalisée.";
+  const aboutValues = Array.isArray(settings.about_values)
+    ? settings.about_values
+    : [
+        "Excellence dans chaque détail",
+        "Respect et écoute de nos clients",
+        "Hygiène irréprochable",
+        "Passion pour notre métier",
+        "Style et modernité",
+      ];
   return (
     <>
       <Hero
@@ -58,13 +72,7 @@ export default function About() {
               DE VOTRE STYLE
             </em>
           </SectionTitle>
-          <p>
-            ER RAMMACH Mohamed Barber Shop est un salon dédié à l’élégance
-            masculine, où tradition et modernité se rencontrent. Fondé par
-            Mohamed Er Rammach, passionné par l’art du barbering, notre salon
-            accueille chaque client dans un cadre raffiné et chaleureux pour une
-            expérience unique et personnalisée.
-          </p>
+          <p>{aboutText}</p>
           <Button to="/gallery" outline>
             DÉCOUVRIR NOTRE UNIVERS
           </Button>
@@ -82,13 +90,7 @@ export default function About() {
           <Diamond />
           <h3>NOS VALEURS</h3>
           <ul>
-            {[
-              "Excellence dans chaque détail",
-              "Respect et écoute de nos clients",
-              "Hygiène irréprochable",
-              "Passion pour notre métier",
-              "Style et modernité",
-            ].map((v) => (
+            {aboutValues.map((v) => (
               <li key={v}>
                 <CheckCircle2 size={15} />
                 {v}
@@ -131,9 +133,21 @@ export default function About() {
         </div>
         <div className="panel statistics">
           {[
-            [CalendarDays, "5+", "Années d’expérience"],
-            [Users, "1000+", "Clients satisfaits"],
-            [Scissors, "15+", "Prestations premium"],
+            [
+              CalendarDays,
+              settings.about_stats_years || "5+",
+              "Années d’expérience",
+            ],
+            [
+              Users,
+              settings.about_stats_clients || "1000+",
+              "Clients satisfaits",
+            ],
+            [
+              Scissors,
+              settings.about_stats_services || "15+",
+              "Prestations premium",
+            ],
             [Clock, "Rapides", "Rendez-vous"],
           ].map(([Icon, value, label]) => (
             <div key={label}>

@@ -59,6 +59,7 @@ await page.goto("http://127.0.0.1:5000/booking");
 await page.locator(".time-slots .available").first().waitFor();
 assert.ok((await page.locator(".calendar-grid button:disabled").count()) > 0);
 await page.goto("http://127.0.0.1:5000/services");
+await page.waitForSelector("main .service-card");
 const servicesText = await page.locator("main").innerText();
 for (const category of ["COUPE MODERNE", "COUPE CLASSIQUE", "SOINS & BEAUTÉ"])
   assert.ok(servicesText.includes(category), category);
@@ -70,6 +71,7 @@ for (const service of services) {
   );
 }
 await page.goto("http://127.0.0.1:5000/");
+await page.waitForSelector(".home-grid .service-card");
 const homeText = await page.locator(".home-services").innerText();
 for (const id of [1, 2, 10, 13]) {
   const service = services.find((item) => item.id === id);

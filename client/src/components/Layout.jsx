@@ -9,8 +9,8 @@ import {
   Facebook,
   MessageCircle,
 } from "lucide-react";
-import { business, whatsappUrl, instagramUrl } from "../config/business";
 import { Button } from "./Common";
+import { useSettings } from "../contexts/SettingsContext";
 export const navigation = [
   ["/", "Accueil"],
   ["/services", "Nos Services"],
@@ -34,6 +34,7 @@ function Logo() {
 function Header() {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
+  const { business, instagramUrl } = useSettings();
   useEffect(() => setOpen(false), [pathname]);
   return (
     <header className="site-header">
@@ -77,6 +78,12 @@ function Header() {
   );
 }
 function Footer() {
+  const { business, instagramUrl, whatsappUrl, settings } = useSettings();
+  const facebookUrl =
+    settings.business_facebook_url ||
+    `https://www.facebook.com/search/top?q=${encodeURIComponent(business.name)}`;
+  const copyright =
+    settings.footer_copyright || "© 2026 ER RAMMACH. Tous droits réservés.";
   return (
     <footer className="site-footer">
       <div className="container footer-inner">
@@ -98,7 +105,7 @@ function Footer() {
             <Instagram />
           </a>
           <a
-            href={`https://www.facebook.com/search/top?q=${encodeURIComponent(business.name)}`}
+            href={facebookUrl}
             aria-label="Rechercher ER RAMMACH sur Facebook"
             target="_blank"
             rel="noreferrer"
@@ -114,7 +121,7 @@ function Footer() {
             <MessageCircle />
           </a>
         </div>
-        <small>© 2026 ER RAMMACH. Tous droits réservés.</small>
+        <small>{copyright}</small>
       </div>
     </footer>
   );
@@ -122,6 +129,7 @@ function Footer() {
 
 function Seo() {
   const { pathname } = useLocation();
+  const { business, instagramUrl } = useSettings();
   useEffect(() => {
     const [title, description] = metadata[pathname] || [
       "Page introuvable | ER RAMMACH",
@@ -176,10 +184,11 @@ function Seo() {
       sameAs: [instagramUrl],
     });
     window.scrollTo(0, 0);
-  }, [pathname]);
+  }, [pathname, business.name, business.internationalPhone, business.address, instagramUrl]);
   return null;
 }
 export default function Layout() {
+  const { whatsappUrl } = useSettings();
   return (
     <>
       <Seo />

@@ -12,7 +12,7 @@ import {
   Phone,
   ArrowRight,
 } from "lucide-react";
-import { business, instagramUrl } from "../config/business";
+import { useSettings } from "../contexts/SettingsContext";
 import { ServicePrice } from "./ServicePrice";
 export function Button({
   to,
@@ -98,6 +98,9 @@ export function Benefits({ home = false }) {
   );
 }
 export function InfoPanel() {
+  const { business, instagramUrl, settings } = useSettings();
+  const sunday =
+    settings.business_opening_hours_sunday || "Dimanche : Fermé";
   return (
     <aside className="panel info-panel">
       <div>
@@ -107,7 +110,7 @@ export function InfoPanel() {
           <p>
             {business.openingHours}
             <br />
-            Dimanche : Fermé
+            {sunday}
           </p>
         </section>
       </div>

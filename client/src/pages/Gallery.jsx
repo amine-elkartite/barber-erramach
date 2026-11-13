@@ -15,10 +15,11 @@ import {
   ApiState,
 } from "../components/Common";
 import { useApi } from "../services/api";
-import { instagramUrl, business } from "../config/business";
+import { useSettings } from "../contexts/SettingsContext";
 import Modal from "../components/Modal";
 export default function Gallery() {
   const resource = useApi("/gallery");
+  const { business, instagramUrl } = useSettings();
   const [category, setCategory] = useState("Toutes"),
     [active, setActive] = useState(null);
   const filtered =
