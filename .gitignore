@@ -8,3 +8,18 @@ test-results/
 playwright-report/
 uploads/
 .db/
+
+# Local dependencies, caches, and private configuration
+.DS_Store
+node_modules/
+__pycache__/
+.venv/
+venv/
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.jks
+*.keystore
+.playwright-mcp/
